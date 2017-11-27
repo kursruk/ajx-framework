@@ -1,15 +1,18 @@
 // path exampe lang/js 
-function localeLoader(path) 
+function cachedLocaleLoader() 
 {   var lc = {};
-    var p = path;
-    var _onload = null;
+    var ploaded = {};
 
-    function load(path)
-    {   if (path!=undefined) p = path;    
-        ajx('/lang/lang/Locale',{path:p}, function(d){ 
-            lc = $.extend(lc, d.locale);
-            if (_onload!=null) _onload();
-        })
+    function translate(path, onload)
+    {   if (ploaded[path]!=undefined) 
+        {  if (onload!=undefined) onload(T);
+        } else
+        {  ajx('/lang/lang/Locale',{path:path}, function(d){ 
+               lc = $.extend(lc, d.locale);
+               ploaded[path] = true;
+               if (onload!=undefined) onload(T);
+           });
+        }
     }
     
     
@@ -18,22 +21,27 @@ function localeLoader(path)
        return name;
     }
     
-    function onload(fu)
-    {  _onload = fu; 
+    function log()
+    {   console.log(ploaded);
+        console.log(lc); 
     }
-    
-    load();
-    return {T:T, onload:onload};
+
+    return {T:T, log:log, translate:translate};
 }
 
+gl_Locales = new cachedLocaleLoader();
+
 function ajx(path, param, onOk, onErr)
-{  $.post('/ajax.php'+path, param , function(d)
+{   $.post('/ajax.php'+path, param , function(d)
    {  if (d.error==undefined) setError('Ajax: unknown error'); else
       if (d.error) 
       { setError(d.errmsg);
         if (onErr!=undefined) onErr(d);
       } else if (onOk!=undefined) onOk(d);
-   }, 'json');
+   }, 'json').fail(function(e,msg){
+       setError(e.status+": "+e.statusText);
+       if (onErr!=undefined) onErr(e);
+   });
 }
 
 

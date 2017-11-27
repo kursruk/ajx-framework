@@ -164,10 +164,24 @@
        
        function beforeInsertUser(&$row)
        {  $auth = $this->cfg->user;
-           
           $row->pass = $auth->hashPassword($row->pass);
+          if (isset($row->pass2)) unset($row->pass2);
        }
-     
+
+       function beforeUpdateUser(&$row)
+       {  $auth = $this->cfg->user;
+          if (isset($row->pass))
+          { if ($row->pass=='') unset($row->pass);
+            else  $row->pass = $auth->hashPassword($row->pass);
+          }
+          if (isset($row->pass2)) unset($row->pass2);
+       }
+        
+       function beforeDeleteUser($row)
+       { $uid = 1*$row->id;
+         if ($uid==$this->cfg->getUID())
+            throw new Exception(T('CAN_NOT_DELETE_YOURSELF'));
+       }
 
     }
 ?>

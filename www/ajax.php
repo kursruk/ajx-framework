@@ -40,7 +40,7 @@
      
      function authGroup($group)
      { if ($this->cfg->inGroup($group)) return true;
-       $this->error("Вы не авторизованы для группы $group", 3004);
+       $this->error(T("NOT_IN_GROUP")." $group", 3004);
        return false;
      }
   }
@@ -59,10 +59,11 @@
         {   $a = explode('?', $_SERVER['REQUEST_URI']);
             $p = substr($a[0],10);            
         }
+        if (strpos($p,'ajax.php')===0) $p=substr($p,9);
         $this->nav = $p;
         $a = explode('/',$p);
         if (count($a)<3) 
-        { echo '{"error":true,"errmsg":"Неверный адрес запроса '.$p.'","errno":3001}';
+        { echo '{"error":true,"errmsg":"'.T('WRONG_REQUEST_ADDRESS').' '.$p.'","errno":3001}';
           return;
         }
         $type = $a[0];
@@ -77,7 +78,7 @@
           if (file_exists($inc))
           { include($inc);
             $this->ajax = new $mod($this, $type.'/'.$path ,$a);            
-          } else echo '{"error":true,"errmsg":"Файл '.$inc.' не найден!","errno":3002}';
+          } else echo '{"error":true,"errmsg":"File '.$inc.' not found!","errno":3002}';
           
         } 
      }
@@ -85,7 +86,7 @@
 
   include(SYS_PATH.'config.php');
   $conf = new wConfig();
-  
+  date_default_timezone_set($conf->default_timezone);
   $conf->route();
 
 ?>

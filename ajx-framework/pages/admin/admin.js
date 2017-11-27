@@ -130,11 +130,36 @@ function userlistView()
     }
 
 /* ---------------- User Groups Init    ----------------------*/
-    // var users = new tableList('#users-table','users',['name','firstname','lastname','email']);
-    var users = new modelListController('.model-list');
-    var usergroups = new groupsList('#user-groups','usergroups');
+    var usersEdit = new modelEditableListView(); 
+    var userForm = null;
     
-    // 
+    function addUser()
+    {  userForm.clearData();
+       $('#useradd-form').modal();
+    }
+    
+    usersEdit.onmninsert(addUser);  
+    $('#btnew').click(addUser);
+
+    usersEdit.onmnedit(function(row){
+       userForm.loadrow({id:row.id});
+       $('#useradd-form').modal();
+    });  
+    
+    usersEdit.onmndelete(function(rows){
+       if (confirm('Remove selected user(s)?'))
+       {   var model = $('#useradd-form').attr('data-model');
+           ajx(model+'/deleteRows', {rows:rows}, function(d){
+             if (!d.error)                  
+             {  users.load();
+                setOk('Deleted!');
+             }
+           });
+       }
+    });
+    
+    var users = new modelListController('.model-list', usersEdit.draw);
+    var usergroups = new groupsList('#user-groups','usergroups');
     
     function init()
     {
@@ -143,7 +168,21 @@ function userlistView()
            $('span.records-total').html(t); 
        });
        
-       var userForm = new modelFormController('#useradd-form');
+       userForm = new modelFormController('#useradd-form');
+       
+       userForm.loaded(function(){
+          $('#useradd-form #pass').attr('data-old-value','');
+          $('#useradd-form #pass').val('');
+          $('#useradd-form #pass2').val('');
+       });
+       
+       userForm.updated(function(d){
+                 if (!d.error) 
+                 {  $('#useradd-form').modal('hide');
+                    users.load();
+                 }
+      });
+       
        var vld = new formValidator('#useradd-form');
         
         users.click(function(id, row){           
@@ -152,17 +191,17 @@ function userlistView()
            var id = row.id;       
            // var id = $(row.target).parents('tr:first').addClass('active').attr('data-id');
            users.current_row = id;
-           usergroups.load(id);
-           usergroups.loaded(function(){ $('#editform').removeClass('hidden').removeClass('disabled-input'); } );
-       });
+           usergroups.load(id);           
+        });
+    
+       usergroups.loaded(function(){
+            $('#editform').removeClass('hidden').removeClass('disabled-input'); 
+            $('#btgrsave').removeClass('hidden');
+        });
        
        $('#btgrsave').click(function(){
-           usergroups.save();
+           usergroups.save();           
           // userForm.save();
-       });
-       
-       $('#btadduser').click(function(){
-           $('#useradd-form').modal();
        });
        
        $('#btdelete').click(function(e){
@@ -178,14 +217,17 @@ function userlistView()
            }
        });
        
-       $('button.b-useradd').click(function(){
-          if (vld.validate()) userForm.insert(function(d){
-             if (!d.error) 
-             {
-                $('#useradd-form').modal('hide');
-                users.load();
-             }
-          });
+       $('button.b-useradd').click(function(){          
+          if (vld.validate()) 
+          {   var id = $('#useradd-form #id').val();
+              if (id=='') userForm.insert(function(d){
+                 if (!d.error) 
+                 {  $('#useradd-form').modal('hide');
+                    users.load();
+                 }
+              });
+              else userForm.update();
+          }
        });
        
        $('#btsearch').click(function(){
