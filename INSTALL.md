@@ -14,7 +14,7 @@ In other cases replace ~ to the path of the site.
     cd ajx
 
     #Clone git repository:
-    git clone https://github.com/ahow/portfoliotools.git
+    git clone https://github.com/kursruk/ajx-framework.git
 ```
 
 3. Copy contents of www directory to the site root path, or make symlinks
