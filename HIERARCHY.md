@@ -39,4 +39,3 @@
      * errors.php - _handling of the PHP errors_
      * ajerrors.php - _handling of the AJAX errors_
  
-     
