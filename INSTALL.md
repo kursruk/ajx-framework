@@ -10,8 +10,8 @@ In other cases replace ~ to the path of the site.
     cd ~
 
     # Create framework directory
-    mkdir ttools
-    cd ttools
+    mkdir ajx
+    cd ajx
 
     #Clone git repository:
     git clone https://github.com/ahow/portfoliotools.git
@@ -21,36 +21,36 @@ In other cases replace ~ to the path of the site.
 ``` bash
     # Run, if you wish to update files manually
     cd ~
-    cp -R ttools/www/* .
+    cp -R ajx/www/* .
     
     # Run,  if you wish to update files from git
     cd ~
-    ln -s ttools/www/index.php index.php
-    ln -s ttools/www/index.php html.php
-    ln -s ttools/www/index.php ajax.php
-    ln -s ttools/www/js js
-    ln -s ttools/www/css css
-    cp -R ttools/www/bootstrap-3.3.6 .
-    cp -R ttools/www/images .
-    cp ttools/www/path.php .
-    cp ttools/www/robots.txt .
-    cp ttools/www/.htaccess .
+    ln -s ajx/www/index.php index.php
+    ln -s ajx/www/index.php html.php
+    ln -s ajx/www/index.php ajax.php
+    ln -s ajx/www/js js
+    ln -s ajx/www/css css
+    cp -R ajx/www/bootstrap-3.3.6 .
+    cp -R ajx/www/images .
+    cp ajx/www/path.php .
+    cp ajx/www/robots.txt .
+    cp ajx/www/.htaccess .
 ```
 
 4. Open and edit path.php `mcedit path.php`
 ``` php
 <?php
     // path to the closed part of the framework
-    define('SYS_PATH','ttools/ajx-framework/');
+    define('SYS_PATH','ajx/ajx-framework/');
     // path for file storing and uploading
-    define('UPLOAD_PATH','ttools/uploads/');
-    define('LOG_PATH','ttools/log/');
+    define('UPLOAD_PATH','ajx/uploads/');
+    define('LOG_PATH','ajx/log/');
 ?>
 ```
 5. Copy example of the site settings to config.php 
 ``` bash
  cd ~
- cp ttools/ajx-framework/config.php.bak config.php
+ cp ajx/ajx-framework/config.php.bak config.php
 ```
 
 6. Edit config file.
@@ -129,7 +129,7 @@ To update web site from GitHUB run these commands in the SSH console:
 1. To update the website from GitHub run these commands in SSH console:
 >>>>>>> de463fd9bea1a4409e418d36ea20e989c65ad781
 ``` bash
-    cd ~\ttools
+    cd ~\ajx
     git pull
 ```
 2. To update the database structure open this URL: [http://your_site_name.com/setup](http://your_site_name.com/setup)  
