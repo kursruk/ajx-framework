@@ -9,3 +9,4 @@ Features:
   ** Form validation
   ** pagers
 3. Integrated localization, language auto detection 
+
