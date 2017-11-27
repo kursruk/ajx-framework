@@ -12,10 +12,10 @@
 * ***ttools*** - _path to the site's framework_
 
 ## Web site framework hierarchy
-* ***ttools*** - _root path_
+* ***root path***
   * ***ajx-framework*** - _framework_
      * ***pages*** - _dynamic pages of site_
-        * ***sales*** - Pages of the Themes tools
+        * ***page_name*** - Some page
            * install.sql - Database structure install file
            * update.1.sql - Database update 1
            * update.2.sql - Database update 2
@@ -27,7 +27,7 @@
      * ***doc*** - _documentation, need to rework_
      * ***lang*** - _translation files_
        * EN.ini - _global english translation file_
-       * RU.ini - _global russian translation file_
+       * ru_RU.ini - _global russian translation file_
      * ***lib*** - _libraries of functions_
      * **vendor** - _external libraries_
      * default.php - _DEFAUTL SITE PAGE!_
