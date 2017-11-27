@@ -14,12 +14,13 @@
 ## Web site framework hierarchy
 * ***root path***
   * ***ajx-framework*** - _framework_
-     * ***pages*** - _dynamic pages of site_
+     * ***pages*** - _dynamic pages of the site_
         * ***page_name*** - Some page
            * install.sql - Database structure install file
            * update.1.sql - Database update 1
            * update.2.sql - Database update 2
         * ***setup*** - _DATABASE SETUP PAGE_
+     * ***psys*** - _dynamic system pages of the site__
      * ***templates*** - _HTML templates of the site_
         * template_auth.php - _THE TEMPLATE FILE ENABLED BY DEFAULT_
      * ***modules*** - _inline modules_
@@ -32,6 +33,7 @@
      * **vendor** - _external libraries_
      * default.php - _DEFAUTL SITE PAGE!_
      * composer.json - _Composer settings, requred to install external libraries_
+     * redirections.json - _Page redirections, contains lost of a system pages_
      * composer.lock - _Composer lock file_
      * config.php - _THE CONFIGURATION FILE_
      * config.php.bak - _example of the configuration file_
