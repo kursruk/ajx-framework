@@ -74,9 +74,9 @@ Also, you can change default Time zone, default template, and other settings.
       public $dbcharset = 'utf8';
 
       // System settings
-      public $title = 'Theme tools';
-      public $author = 'Andrew Howard';
-      public $description = 'Theme tools';
+      public $title = 'Project name';
+      public $author = 'Author name';
+      public $description = 'Project description';
       public $root_prefix = ''; // Site subdirectory
       public $sef = true;  // SEF URLs are enabled
       // Comment next line to enable language auto detection
