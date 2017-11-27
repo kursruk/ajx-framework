@@ -78,8 +78,9 @@ Also, you can change default Time zone, default template, and other settings.
       public $author = 'Andrew Howard';
       public $description = 'Theme tools';
       public $root_prefix = ''; // Site subdirectory
-      public $sef = true; // SEF URLs are enabled
-      public $lang = 'EN';
+      public $sef = true;  // SEF URLs are enabled
+      // Comment next line to enable language auto detection
+      public $lang = 'EN'; 
       protected $template = 'templates/template_auth.php';
       public $authorizedURL = '/'; // Goto after authorize
       public $default_timezone = 'Asia/Irkutsk';
