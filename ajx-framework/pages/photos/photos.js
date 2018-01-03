@@ -24,6 +24,7 @@ $(function(){
        $('#photos-form').modal();
     });  
     
+    
     photoEdit.onmndelete(function(rows){
        if (confirm('Remove selected Photo(s)?'))
        {   var model = $('#photos-form').attr('data-model');
@@ -46,29 +47,55 @@ $(function(){
     
     photoForm = new modelFormController('#photos-form');
    
-   photoForm.loaded(function(){
-      $('#useradd-form #pass').attr('data-old-value','');
-      $('#useradd-form #pass').val('');
-      $('#useradd-form #pass2').val('');
-   });
+    var wildList = new modelListController('.wild-list');
+    var refList = new modelListController('.ref-list');
    
-   photoForm.updated(function(d){
+    photoForm.loaded(function(d){
+      // $('#useradd-form #pass2').val('');
+      wildList.load({master:d.id_photo});
+      refList.load({master:d.id_photo});
+      console.log(d);
+    });
+   
+    photoForm.updated(function(d){
              if (!d.error) 
              {  $('#useradd-form').modal('hide');
                 users.refresh();
              }
-   });
+    });
        
        
-       // enable pager
-       pager = new modelPagination('.model-list .model-pager');
+    // enable pager
+    pager = new modelPagination('.model-list .model-pager');
        
-       model.total(function(total, rows_lim){
+    model.total(function(total, rows_lim){
            pager.setTotal(total, rows_lim);
-       })
-       pager.change(function(n){
+    })
+    
+    pager.change(function(n){
            model.load(n);
-       });
+    });
+    
+    var wpager = new modelPagination('.wild-list .model-pager');
+    
+    wildList.total(function(total, rows_lim){
+           wpager.setTotal(total, rows_lim);
+    });
+    
+    wpager.change(function(n){
+           wildList.load(n);
+    });
+
+    var rpager = new modelPagination('.ref-list .model-pager');
+    
+    refList.total(function(total, rows_lim){
+           rpager.setTotal(total, rows_lim);
+    });
+    
+    rpager.change(function(n){
+           refList.load(n);
+    });
+    
    } 
    
     // Model select init
@@ -96,6 +123,10 @@ $(function(){
        {   if (s!='') p.search = '%'+s+'%';
            model.load(p);
        } else model.load();
+   });
+   
+   $('.model-list .model-search input').keyup(function(d){ 
+           if (d.keyCode==13)  $('.model-list .model-search button').trigger('click');
    });
     
 });

@@ -36,7 +36,7 @@
     </div>
     <div class="row w-fsearch">
         <div class="col-lg-4"><?=$f->modelSelect('wild','/pages/photos/Model/lkwild')?></div>
-        <div class="col-lg-4"><?=$f->search3dot('sic_code','sic')?></div>                
+       <!--  <div class="col-lg-4"><?=$f->search3dot('sic_code','sic')?></div> -->                
         <div class="col-lg-4"></div>  
     </div>
     <div class="model-pager"></div>
@@ -69,6 +69,7 @@
             <div class="row">
                 <div class="col-lg-4"><?php $f->validate('req,minlen=2'); echo $f->date('ddate'); ?></div>
                 <div class="col-lg-4"><?php $f->validate('req,minlen=2'); echo $f->date('add_date'); ?></div>
+                <div class="col-lg-4"><?=$f->input('phot_id')?></div>
             </div>
             <div class="row">
                 <div class="col-lg-4"><?=$f->input('firstname')?></div>
@@ -90,7 +91,29 @@
             <div class="row">
                 <div class="col-lg-12"><?=$f->textarea('note',3)?></div>
             </div>           
-            <?=$f->key('id')?>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="wild-list" data-model="/pages/photos/Model/photowild">
+                         <div class="model-pager"></div>
+                            <table class="table table-striped selectable">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table> 
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ref-list" data-model="/pages/photos/Model/photoref">
+                            <div class="model-pager"></div>
+                            <table class="table table-striped selectable">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table> 
+                    </div>
+                </div>
+            </div>
+
+            <?=$f->key('id_photo')?>            
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal"><?=T('Close')?></button>
