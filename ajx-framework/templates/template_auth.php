@@ -75,37 +75,10 @@
               $cf = $this;
              if ($cf->inGroup('admin'))
              {
-             ?>
-              <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Data menu<span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                     <?php $dataMenu->display() ?>
-                  </ul>
-              </li>
-             <?php 
              }
              if ($cf->inGroup('admin') || $cf->inGroup('editor'))
              {
-             ?>                
-              <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Themes<span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                     <?php $themesMenu->display() ?>
-                  </ul>
-              </li>
-              <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Industries<span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                     <?php $endmarketsMenu->display() ?>
-                  </ul>
-              </li>
-              <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Companies<span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                     <?php $companiesMenu->display() ?>
-                  </ul>
-              </li>              
-             <?php 
+             
              }
              if ($cf->inGroup('admin') || $cf->inGroup('editor')  || $cf->inGroup('user'))
              {

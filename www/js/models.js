@@ -88,7 +88,7 @@ function modelEditableListView(selector)
            for (i in d.rows)
            {   var j;
                var r = d.rows[i];
-               if (r.id!=undefined) s+='<tr data-id="'+i+'">'; else s+='<tr>';
+               s+='<tr data-id="'+i+'">';                
                
                // draw edit buttons
                s+='<td>';
