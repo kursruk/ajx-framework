@@ -56,37 +56,40 @@
 
 
 <!-- Modal -->
-<div class="modal fade" role="dialog" id="photos-form" data-model="/psys/admin/Model/photo">
+<div class="modal large fade" role="dialog" id="photos-form" data-model="/pages/photos/Model/photo">
   <div class="modal-dialog">
 
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title"><?=T('User')?></h4>
+        <h4 class="modal-title"><?=T('Photo')?></h4>
       </div>
       <div class="modal-body">
             <div class="row">
-                <div class="col-lg-12"><?php $f->validate('req,minlen=2'); echo $f->input('name'); ?></div>
+                <div class="col-lg-4"><?php $f->validate('req,minlen=2'); echo $f->date('ddate'); ?></div>
+                <div class="col-lg-4"><?php $f->validate('req,minlen=2'); echo $f->date('add_date'); ?></div>
             </div>
             <div class="row">
-                <div class="col-lg-12"><?php $f->validate('req,minlen=2'); echo $f->input('firstname');?></div>
+                <div class="col-lg-4"><?=$f->input('firstname')?></div>
+                <div class="col-lg-4"><?=$f->input('lastname')?></div>
+                <div class="col-lg-4"><?=$f->input('client')?></div>
             </div>
             <div class="row">
-                <div class="col-lg-12"><?=$f->input('lastname')?></div>
+                <div class="col-lg-4"><?=$f->input('b_and_w')?></div>
+                <div class="col-lg-4"><?php $f->validate(''); echo $f->input('color')?></div>
+                <div class="col-lg-4"><?php $f->validate(''); echo $f->input('Digital')?></div>
             </div>
             <div class="row">
-                <div class="col-lg-12"><?php $f->validate('email'); echo $f->input('email')?></div>
+                <div class="col-lg-3"><?=$f->chbox('famous')?></div>
+                <div class="col-lg-3"><?=$f->chbox('place')?></div>
+                <div class="col-lg-3"><?=$f->chbox('concept')?></div>
+                <div class="col-lg-3"><?=$f->chbox('thing')?></div>
             </div>
+
             <div class="row">
-                <div class="col-lg-12"><?=$f->input('phone')?></div>
+                <div class="col-lg-12"><?=$f->textarea('note',3)?></div>
             </div>           
-            <div class="row">
-                <div class="col-lg-12"><?php $f->validate('minlen=3'); echo $f->input('pass','password');?></div>
-            </div> 
-            <div class="row">
-                <div class="col-lg-12"><?php $f->validate('minlen=3,equalto=#pass'); echo $f->input('pass2','password');?></div>
-            </div> 
             <?=$f->key('id')?>
       </div>
       <div class="modal-footer">

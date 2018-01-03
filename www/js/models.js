@@ -295,8 +295,7 @@ function modelFormController(selector)
              {   var c_type = ctrl.getAttribute('data-control-type');           
                  if (gl_formvalidator!=undefined && gl_formvalidator.controls[c_type]!=undefined && id!=null)
                  { var getter = new gl_formvalidator.controls[c_type]('#'+id);
-                   getter.setData(d[id]);
-                   // console.log(id, d[id]);
+                   getter.setData(d[id]);     
                    ctrl.setAttribute('data-old-value', d[id]);
                  }
               }

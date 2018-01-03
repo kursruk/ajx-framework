@@ -14,6 +14,20 @@ gl_formvalidator.controls.basic = function(selector)
      return {getData:getData, setData:setData}
 }
 
+
+gl_formvalidator.controls.date = function(selector)
+{    function setData(value)
+     {  
+         $(selector).val( value.split(' ')[0] );
+     }
+     
+     function getData()
+     {  return $(selector).val();
+     }
+     
+     return {getData:getData, setData:setData}
+}
+
 gl_formvalidator.controls.data = function(selector)
 {    function setData(value)
      {  $(selector).attr('data-value', value );

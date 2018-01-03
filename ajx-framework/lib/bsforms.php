@@ -95,7 +95,7 @@
         return '<div class="form-group">
         <label for="'.$name.'">'.$label.'</label>
         <div class="input-group date">          
-          <input type="date" data-control-type="basic" id="'.$name.'" class="form-control" name="bookdate" placeholder="'.$placeholder.'"  data-validate="req,regexp=\'^(0?[1-9]|1[012])[\/](0?[1-9]|[12][0-9]|3[01])[\/\-]([0-9]{4})$\',msg=\'Invalid date format!\'"/>
+          <input type="date" data-control-type="date" id="'.$name.'" class="form-control" name="bookdate" placeholder="'.$placeholder.'"  data-validate="req,regexp=\'^(0?[1-9]|1[012])[\/](0?[1-9]|[12][0-9]|3[01])[\/\-]([0-9]{4})$\',msg=\'Invalid date format!\'"/>
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
           </span>

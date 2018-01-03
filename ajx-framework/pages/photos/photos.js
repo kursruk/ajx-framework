@@ -1,5 +1,7 @@
 var pager;
 
+var photoForm = null;
+    
 $(function(){
 
   if ($('.model-list').length>0)
@@ -7,25 +9,24 @@ $(function(){
     var filterData = new modelFormController('.w-fsearch');
        
     var photoEdit = new modelEditableListView(); 
-    var photoForm = null;
+
     
     function addPhoto()
     {  photoForm.clearData();
-       $('#photoadd-form').modal();
+       $('#photos-form').modal();
     }
     
     photoEdit.onmninsert(addPhoto);  
     $('#btnew').click(addPhoto);
 
     photoEdit.onmnedit(function(row){
-       console.log(row);
-       photoForm.loadrow({id:row.id});
-       $('#photoadd-form').modal();
+       photoForm.loadrow({id:row.id_photo});
+       $('#photos-form').modal();
     });  
     
     photoEdit.onmndelete(function(rows){
        if (confirm('Remove selected Photo(s)?'))
-       {   var model = $('#photoadd-form').attr('data-model');
+       {   var model = $('#photos-form').attr('data-model');
            ajx(model+'/deleteRows', {rows:rows}, function(d){
              if (!d.error)                  
              {  Photos.refresh();
@@ -43,7 +44,7 @@ $(function(){
            // console.log(row);
     });
     
-    photoForm = new modelFormController('#photo-form');
+    photoForm = new modelFormController('#photos-form');
    
    photoForm.loaded(function(){
       $('#useradd-form #pass').attr('data-old-value','');
