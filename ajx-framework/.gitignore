@@ -1,4 +1,6 @@
 *.log
+composer.lock
 /config.php
 /pages/*.*
 /vendor
+
