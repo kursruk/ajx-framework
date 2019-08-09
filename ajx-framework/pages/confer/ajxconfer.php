@@ -10,21 +10,23 @@
         $this->processModel(__DIR__);
     }
     
-   function getConfId()
-   {   $id = null;
-       if (isset($_SESSION['conf_id'])) $id = $_SESSION['conf_id']; 
-       return $id;
-   }
+    function getConfId()
+    {  $cf = $this->cfg->getUserConfig('confer');
+       if ($cf!==null && isset($cf->conf_id)) return $cf->conf_id;       
+       return null;
+    }
    
-    function ajxGetConfigId() 
-    {  $this->res->id = $this->getConfId();
+    function ajxSetConfigId() 
+    {  $cf = $this->cfg->getUserConfig('confer');
+       if ($cf==null) $cf = new stdClass();
+       $cf->conf_id = post('id', null);
+       $this->cfg->setUserConfig('confer', $cf);
+       $this->res->id = $cf->conf_id;
        echo json_encode($this->res);
     }
     
-    function ajxSetConfigId() 
-    {  $id = post('id', null);
-       if ($id>0) $_SESSION['conf_id'] = $id;
-       $this->res->id = $id;
+    function ajxGetConfigId() 
+    {  $this->res->id = $this->getConfId();
        echo json_encode($this->res);
     }
     

@@ -130,6 +130,38 @@
      {  if ($this->user!=null && isset($this->user->user->id)) return $this->user->user->id;
         return null;
      }
+     
+     function getUserConfig($name)
+     { $db = $this->db;
+       $uid = $this->getUID();
+       $qr = $db->query("select json from mc_user_settings where user_id=:user_id and name=:name",
+         ['user_id'=>$uid, 'name'=>$name]
+       );
+       $j = $db->fetchSingleValue($qr);
+       if (empty($j)) return null;
+       return json_decode($j);       
+     }
+     
+     function setUserConfig($name, $ucfg)
+     { $db = $this->db;
+       $uid = $this->getUID();       
+       $qr = $db->query("select json from mc_user_settings where user_id=:user_id and name=:name",
+         ['user_id'=>$uid, 'name'=>$name]
+       );
+       $j = $db->fetchSingleValue($qr);
+       $json = json_encode($ucfg);
+       if (empty($j)) 
+       {  $db->query("insert into mc_user_settings (user_id, name, json) values 
+          ( :user_id, :name, :json)",
+            ['user_id'=>$uid, 'name'=>$name, 'json'=>$json]
+          );
+       } else
+       {  $db->query("update mc_user_settings set json=:json 
+          where user_id=:user_id and name=:name;",
+            ['user_id'=>$uid, 'name'=>$name, 'json'=>$json]
+          );
+       }
+     }
   }
   
   // Language auto detection

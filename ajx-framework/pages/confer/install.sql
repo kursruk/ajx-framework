@@ -98,3 +98,11 @@ create table md_lookups
   primary key (field_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table md_view_translations
+( view_id integer not null,
+  lang varchar(8) not null,
+  json text not null,
+  constraint foreign key (view_id) references md_views (id) on delete cascade on update cascade,
+  primary key (view_id, lang)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

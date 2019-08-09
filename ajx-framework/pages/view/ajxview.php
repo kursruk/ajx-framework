@@ -2,12 +2,11 @@
   class ajxview extends wAjax
   {
      
-      function getConfId()
-      {  $id = null;
-         if (isset($this->cfg->md_conf)) $id=$this->cfg->md_conf;
-         if (isset($_SESSION['conf_id'])) $id = $_SESSION['conf_id'];
-         return $id;
-      }
+     function getConfId()
+     {  $cf = $this->cfg->getUserConfig('confer');
+        if ($cf!==null && isset($cf->conf_id)) return $cf->conf_id;       
+        return null;
+     }
    
       function calcTotal($tname, $wh='', $wk=array() )
       {  $db = $this->cfg->db;

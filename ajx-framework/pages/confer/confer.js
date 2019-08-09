@@ -39,7 +39,7 @@ function confer(_id)
   function afterSave(d)
   { if (d.type=='fld') fld_upd={}; else
     if (d.type=='view') view_upd={};
-    setOk('Изменения сохранены');
+    setOk('Saved!');
   }
   
   function saveAll()

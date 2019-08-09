@@ -43,6 +43,7 @@
        $this->error(T("NOT_IN_GROUP")." $group", 3004);
        return false;
      }
+     
   }
   
   class wMain extends wBase

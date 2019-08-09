@@ -6,7 +6,7 @@
         $this->path = $path.'/index.php';
         $this->cfg = $cfg;
         $this->seg = $seg;
-        $cfg->addJS('/js',"view.js");
+        $cfg->addJS('/js',"view.js?v3");
      }
      function drawView($qr, $h)
      { echo '<table class="table table-striped"><tr>';

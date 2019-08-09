@@ -48,7 +48,10 @@ function wModal(id, title, panel, classN)
 
 
 function view(_div, _onSelectRow)
-{ var div = _div, title='';
+{ 
+  let T = function(v){ return v; } // Default translation function
+   
+  var div = _div, title='';
   var v, pkeys = [], pcols = [], pg_rows, total_rows, c_page = 1, edit_width=1,
   n_pages, self = this, fds, gsearch='', formkeys={}, refs={}, get_total = true,
   onSelectRow = _onSelectRow;
@@ -128,15 +131,15 @@ function view(_div, _onSelectRow)
   <div class="modal-dialog">\
     <div class="modal-content">\
       <div class="modal-header">\
-        <button type="button" class="close" data-dismiss="modal" aria-label="закрыть"><span aria-hidden="true">&times;</span></button>\
+        <button type="button" class="close" data-dismiss="modal" aria-label="'+T('Close')+'"><span aria-hidden="true">&times;</span></button>\
         <h4 class="modal-title"></h4><div class="w-view" id="tgt_'+mview+'" data-view="'+mview+'"></div>\
       </div>\
       <div class="modal-body">';
       
         s+='  </div>\
       <div class="modal-footer">\
-        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
-        <button type="button" class="btn btn-primary w-btnsave">Сохранить</button>\
+        <button type="button" class="btn btn-default" data-dismiss="modal">'+T('Close')+'</button>\
+        <button type="button" class="btn btn-primary w-btnsave">'+T('Save')+'</button>\
       </div>\
     </div>\
   </div>\
@@ -166,7 +169,7 @@ function view(_div, _onSelectRow)
 
 
   function afterSave()
-  {  setOk(title+': cохранение выполнено');
+  {  setOk(title+': '+T('SAVING_COMPLETE'));
      refs={}; // очистим данные ссылок
   }
 
@@ -309,7 +312,7 @@ function view(_div, _onSelectRow)
 
         // заголовок таблицы
         hdr+='<table class="table table-striped"><thead>';
-        hdr+='<tr><th><input class="w-chb-all" type="checkbox" /></th>';
+        hdr+='<tr><th style="width:40pt"><input class="w-chb-all" type="checkbox" /></th>';
         for (i in d.h) 
         { var r = d.h[i];
           if (r.visable==1 && r.ingrid==1 && r.widget_id!=2) 
@@ -329,18 +332,18 @@ s+='<div class="row"><div class="col-lg-3"> <span class="w-label">'+d.title+'</s
 
 s+='<div class="col-lg-3"> \
  <div class="input-group">';
-s+='<button class="btn btn-default w-btn-new" data-toggle="tooltip" data-placement="top" title="Добавить" aria-hidden="true"><span class="glyphicon glyphicon-plus"></span></button>';
-s+='<button class="btn btn-default w-btn-del" data-toggle="tooltip" data-placement="top" title="Удалить" aria-hidden="true"><span class="glyphicon glyphicon-minus"></span></button>&nbsp;';
-s+='<button class="btn btn-default w-btn-sort" data-toggle="tooltip" data-placement="top" title="Сортировка" aria-hidden="true"><span class="glyphicon glyphicon glyphicon-sort-by-attributes"></span></button>';
-s+='<button class="btn btn-default w-btn-find" data-toggle="tooltip" data-placement="top" title="Поиск" aria-hidden="true"><span class="glyphicon glyphicon-search"></span></button>';
+s+='<button class="btn btn-default w-btn-new" data-toggle="tooltip" data-placement="top" title="'+T('Add')+'" aria-hidden="true"><span class="glyphicon glyphicon-plus"></span></button>';
+s+='<button class="btn btn-default w-btn-del" data-toggle="tooltip" data-placement="top" title="'+T('Delete')+'" aria-hidden="true"><span class="glyphicon glyphicon-minus"></span></button>&nbsp;';
+s+='<button class="btn btn-default w-btn-sort" data-toggle="tooltip" data-placement="top" title="'+T('Sort')+'" aria-hidden="true"><span class="glyphicon glyphicon glyphicon-sort-by-attributes"></span></button>';
+s+='<button class="btn btn-default w-btn-find" data-toggle="tooltip" data-placement="top" title="'+T('Search')+'" aria-hidden="true"><span class="glyphicon glyphicon-search"></span></button>';
 s+=' </div>\
 </div>';
 
 // поиск
 s+='<div class="col-lg-6">';
 if (n_pages>1 && sfld.length>0) s+='<div class="input-group"> \
-<input type="text" class="form-control w-stext" data-toggle="tooltip" data-placement="top" title="'+sfld.join('; ')+'" placeholder="Поиск"> \
-<span class="input-group-btn"> <button class="btn btn-default w-search" type="button">Найти</button> </span> \
+<input type="text" class="form-control w-stext" data-toggle="tooltip" data-placement="top" title="'+sfld.join('; ')+'" placeholder="'+T('Search')+'"> \
+<span class="input-group-btn"> <button class="btn btn-default w-search" type="button">'+T('Search')+'</button> </span> \
 </div>';
  
 s+='</div>\
@@ -406,12 +409,19 @@ s+='</div>\
      ajx('/pages/view/loadPage/'+v, p ,drawData);
   }
   
-  v = $(div).attr('data-view');
-  if (v!=undefined) ajx('/pages/view/load/'+v, draw); else
-  { fkeys = $(div).attr('data-keys'), childref = $(div).attr('data-childref'); // lfyys
-    if (childref==undefined) childref=null;
-    if (childref!=null) ajx('/pages/view/loadChild',{childref:childref, fkeys:fkeys, get_total:true}, draw);
-  }
+  gl_Locales.translate('pages/view', function(fu) {
+
+     T=fu;
+
+     v = $(div).attr('data-view');
+     if (v!=undefined) ajx('/pages/view/load/'+v, draw); else
+     { fkeys = $(div).attr('data-keys'), childref = $(div).attr('data-childref'); // lfyys
+       if (childref==undefined) childref=null;
+       if (childref!=null) ajx('/pages/view/loadChild',{childref:childref, fkeys:fkeys, get_total:true}, draw);
+     }
+     
+  });
+  
 }
    
 $(function()
