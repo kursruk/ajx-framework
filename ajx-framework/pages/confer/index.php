@@ -6,6 +6,7 @@
     border-radius: 0 0px 4px 4px;
   }
   #flist { overflow-y: scroll;   height: 206pt; }
+  .w-scroll { overflow-y: scroll;   height: 200pt; }
 </style>
 
 <div>
@@ -51,6 +52,8 @@
                   </div>   
                 <div id="flist" class="list-group">
                 </div>
+                <a class="l-check" target="__blank" href="/view"><?=T('CHECK_TABLE')?></a><br>
+                <a class="l-translate" target="__blank" href="javascript:"><?=T('TRANSLATE')?></a>
             </div>
           </div>
           <div class="col-lg-4">
@@ -125,5 +128,7 @@
 </div>
 
 <div id="view-add-config"></div>
+<div id="translate"></div>
+
 
 

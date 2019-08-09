@@ -17,6 +17,20 @@
          return 1*$a[0][0];
       }
       
+      function loadViewTranslation($view_id)
+      {  $id = $view_id;
+         $lang = $this->cfg->lang;
+         $db = $this->cfg->db;       
+         $qr = $db->query("select json from md_view_translations where view_id=:view_id and lang=:lang",
+           ['view_id'=>$id, 'lang'=>$lang]
+         );
+         $j = $db->fetchSingleValue($qr);
+         if (!empty($j))
+         {  return json_decode($j);
+         } 
+         return new stdClass();         
+      }
+      
       function ajxload()
       {  if (!isset($this->seg[3])) return $this->error('Не передано название представления!',4001);
          $pg_rows = 7; // 1*post('pg_rows', $this->cfg->pg_rows);
@@ -29,7 +43,7 @@
          $this->res->rows = $qr->fetchAll(PDO::FETCH_NUM);
          if (!isset($this->res->total)) $this->res->total= $this->calcTotal($this->tname);
          $this->res->pg_rows = $pg_rows;
-         
+         $this->res->locale = $this->loadViewTranslation( $this->res->id );
          echo json_encode($this->res);
       }
 
@@ -121,7 +135,7 @@
         $get_total = post('get_total', false);
         $db = $this->cfg->db;
         $conf_id = $this->getConfId();
-        $qr = $db->query('select id,vtitle,tname,edit_width from md_views where name=:name and conf_id=:id',
+        $qr = $db->query('select id,name,vtitle,tname,edit_width from md_views where name=:name and conf_id=:id',
         array('name'=>$v, 'id'=>$conf_id) );
         $vr =  $db->fetchSingle($qr);
         
@@ -169,11 +183,11 @@
            {  $ql = $db->query('select f.fname from md_lookups l 
 join md_fields f on l.display_field_id=f.id where l.field_id=:id',
               array('id'=>$r->id ) );
-              $lf = 'r'.$r->ref_id.'.'.$db->fetchSingleValue($ql);
+              $lf = 'r'.$r->ref_id.'.`'.$db->fetchSingleValue($ql).'`';
               $flist[] = $lf;
               $slinks[$r->fname] = $lf; // Добавим исключение для where
            } else
-           if ($r->widget_id!=2 ) $flist[] = 'r.'.$r->fname; // исключаем ссылочное поле и подчинённые таблицы
+           if ($r->widget_id!=2 ) $flist[] = 'r.`'.$r->fname.'`'; // исключаем ссылочное поле и подчинённые таблицы
            if ($r->searchable==1) $slist[] = $r->fname;
         }
 
@@ -181,6 +195,7 @@ join md_fields f on l.display_field_id=f.id where l.field_id=:id',
         {  $this->res->h = $h;
            $this->res->id = $vr->id;
            $this->res->title = $vr->vtitle; 
+           $this->res->name = $vr->name;
            $this->res->edit_width = 1*$vr->edit_width; 
            $this->tname = $vr->tname; 
         }

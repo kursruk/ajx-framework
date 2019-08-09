@@ -15,7 +15,6 @@ function cachedLocaleLoader()
         }
     }
     
-    
     function T(name)
     {  if (lc[name]!=undefined) return lc[name];
        return name;

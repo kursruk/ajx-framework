@@ -6,6 +6,7 @@ function confer(_id)
   let fields, active_field=null, active_view=null; // текущие поля представления
   let fld_upd = {};
   let selected_table = '';
+  let last_view = null;
   
   
   function setFieldAttrs(f)
@@ -51,6 +52,7 @@ function confer(_id)
   function drawView(d)
   { var i, inp, s='';
     
+    last_view = d;
     saveAll();
     
     // Обновим представление
@@ -61,6 +63,8 @@ function confer(_id)
       }
     }
     fields = d.fields;
+    
+    $('a.l-check').attr('href','/view/'+d.view.name);
     
     for (i in fields)
     {  var a = '', r = fields[i];
@@ -147,7 +151,9 @@ function confer(_id)
        });
   });
   
-  return {setConf:setConf, refresh:refresh};
+  function getLastView(){ return last_view; }
+  
+  return {setConf:setConf, refresh:refresh, getLastView:getLastView};
 }
 
 function modelSelector(selector, prm) {
@@ -206,10 +212,62 @@ function modelSelector(selector, prm) {
    return {click:click, refresh:refresh };
 }
 
+function translatorForm(selector)
+{  let views = new htviewCached();
+   let v = null;
+   
+   function show(view)
+   {  v = view;
+      if (v==null) return;      
+      ajx('/pages/confer/LoadViewTranslation', {view:v.view.id} , function(d){
+         let s = '';
+         let tx = d.data;
+         let val = '';
+          if (tx[v.view.name]!==undefined) val=tx[v.view.name];
+         s+='<tr><td>'+v.view.name+'</td><td contenteditable="true">'+val+'</td></tr>';         
+         for (let i in v.fields)
+         {  let r = v.fields[i];
+            val = '';
+            if (tx[r.fname]!==undefined) val=tx[r.fname];
+            s+='<tr><td>'+r.fname+'</td><td contenteditable="true">'+val+'</td></tr>';
+         }
+         $(selector+' .w-tr-text tbody').html(s);      
+         $('#translate-form').modal();
+      });
+   }
+   
+   views.view('/pages/confer/translate', selector, function(){
+      // Save
+      
+      $('.b-translation-save').click(function(){
+         let rows = $(selector+' .w-tr-text tbody>tr');
+         let t = {};         
+         for (let i=0; i<rows.length; i++) 
+         { let tds =  $(rows[i]).find('td');
+           let txt = $(tds[1]).text().trim();
+           if (txt!=='') t[ $(tds[0]).text() ] = txt;
+         }
+         ajx('/pages/confer/SaveViewTranslation', {view:v.view.id, data:t} , function(d){
+            if (d.info!=undefined) setOk(d.info);          
+         });
+         console.log(t);
+      });
+      
+   });  
+   return {show:show};
+}
+
 $(function()
 {  let conf = new confer(1);
    let views = new htviewCached();
    let addConfForm = null;
+   
+   let translator = translatorForm('#translate');
+   
+   $('a.l-translate').click(function(){
+      translator.show( conf.getLastView() );
+   });
+      
    let confSelect = new modelSelector('.s-conf-selector', {
       getName: function(r){
          return r.conf+' '+r.version+'.'+r.minor_version;

@@ -148,6 +148,47 @@
        } else $this->error('Отстутствует обязательный параметр id',5001);
     }
     
+    function ajxLoadViewTranslation()
+    {  $id = post('view', null);
+       $lang = $this->cfg->lang;
+       $db = $this->cfg->db;       
+       $qr = $db->query("select json from md_view_translations where view_id=:view_id and lang=:lang",
+         ['view_id'=>$id, 'lang'=>$lang]
+       );
+       $j = $db->fetchSingleValue($qr);
+       if (!empty($j))
+       {  $this->res->data = json_decode($j);          
+       } else $this->res->data = new stdClass();
+       echo json_encode($this->res);
+    }
+     
+    function ajxSaveViewTranslation()
+    {  $id = post('view', null);
+       $data = post('data', []);
+       $lang = $this->cfg->lang;
+            
+       $db = $this->cfg->db;       
+       $qr = $db->query("select json from md_view_translations where view_id=:view_id and lang=:lang",
+         ['view_id'=>$id, 'lang'=>$lang]
+       );
+       $j = $db->fetchSingleValue($qr);
+       $json = json_encode($data, JSON_UNESCAPED_UNICODE);
+       if (empty($j)) 
+       {  $db->query("insert into md_view_translations (view_id, lang, json) values 
+          ( :view_id, :lang, :json)",
+            ['view_id'=>$id, 'lang'=>$lang, 'json'=>$json]
+          );
+       } else
+       {  $db->query("update md_view_translations set json=:json 
+          where view_id=:view_id and lang=:lang;",
+            ['view_id'=>$id, 'lang'=>$lang, 'json'=>$json]
+          );
+       }
+       $this->res->lang = $lang;
+       $this->res->info=T('Saved');
+       echo json_encode($this->res);
+    }
+    
     function ajxSaveFields()
     {  $this->res->type = 'fld';
        $db = $this->cfg->db;

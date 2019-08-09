@@ -3,6 +3,7 @@ function wModal(id, title, panel, classN)
    let T = function(v){ return v; } // Default translation function
    let self = this;
    
+   
    this.draw = function(body, init)
    { gl_Locales.translate('pages/view', function(fu) {
      
@@ -57,7 +58,7 @@ gl_views = 0;
 
 function view(_div, _onSelectRow)
 { 
-  let T = function(v){ return v; } // Default translation function
+  let gl_T = function(v){ return v; } // Global translation function
   let div = _div, title='';
   let v, pkeys = [], pcols = [], pg_rows, edit_width=1,
   n_pages, self = this, fds, gsearch='', formkeys={}, refs={}, get_total = true,
@@ -66,12 +67,16 @@ function view(_div, _onSelectRow)
   var frmEdit = null;
   var frmNew = null;
   var wcl=['','middle','large']; // классы размеров форм
+  let lc = {};  // Language translatoin text
   
   gl_views++;
   $(div).attr('id', 'view_'+gl_views);
   let pager = new modelPagination('#view_'+gl_views + ' .w-pager');
        
-    
+  function T(txt)
+  { if (lc[txt]!==undefined) return lc[txt]; // If text is in local  translation
+    return gl_T(txt); // Else global translation 
+  }
 
   function updateDisplayLinks(ref, eForm)
   {  var p=[], i, ar = eForm.dv.find('div.w-ref[data-ref='+ref.ref+']');
@@ -185,7 +190,7 @@ function view(_div, _onSelectRow)
   }
 
   this.addNew = function()
-  {  console.log(v, 'New:');
+  {  // console.log(v, 'New:');
    
      if (frmNew==null) 
      { frmNew = new wModal('frmNew'+v, T('Add')+': '+title,
@@ -221,19 +226,20 @@ function view(_div, _onSelectRow)
          if (d.row!=undefined && d.row[i]!=undefined) val = d.row[i];
          if (r.pkey==1) formkeys[r.fname] = val;
          if (r.visable==1) 
-         {   var t = "text";
+         {   let t = "text";
+             let label = T(r.fname);
              if (r.widget_id>4)
              {   if (r.widget_id==5) t="date"; else
                  if (r.widget_id==6) t="datetime-local";  else
                  if (r.widget_id==7) t="time"; 
              } 
-             if (r.widget_id==1) s+=addRow('<label for="tname">'+r.ftitle+'</label>',
-             '<div class="input-group w-ref" data-ref="'+r.ref_id+'" data-fid="'+r.id+'"><input type="text" class="form-control w-link" placeholder="'+r.ftitle+'"  value="'+val+'">\
+             if (r.widget_id==1) s+=addRow('<label for="tname">'+label+'</label>',
+             '<div class="input-group w-ref" data-ref="'+r.ref_id+'" data-fid="'+r.id+'"><input type="text" class="form-control w-link" placeholder="'+label+'"  value="'+val+'">\
   <span class="input-group-addon btn btn-default w-setlink">...</span></div>');
              else if (r.widget_id==2) s+='<div class="w-view" data-childref="'+r.ref_id+'" data-keys="'+keys+'"></div>';
              else    
-             s+=addRow('<label for="tname">'+r.ftitle+'</label>',
-             '<input type="'+t+'" class="form-control w-data" id="'+r.fname+'" placeholder="'+r.ftitle+'" value="'+val+'">');
+             s+=addRow('<label for="tname">'+label+'</label>',
+             '<input type="'+t+'" class="form-control w-data" id="'+r.fname+'" placeholder="'+label+'" value="'+val+'">');
 
              // ссылка
              //if (r.widget_id==1)
@@ -248,7 +254,7 @@ function view(_div, _onSelectRow)
       s = drawFormInputs(d, keys);
 
       if (frmEdit==null) 
-      { frmEdit = new wModal('frm'+v, T('Edit')+': '+d.title,
+      { frmEdit = new wModal('frm'+v, T('Edit')+': '+T(d.name),
        '<button type="button" class="btn btn-default w-close">'+T('Close')+'</button>\
 <button type="button" class="btn btn-primary w-btnsave">'+T('Save')+'</button>', wcl[edit_width-1]);
         first = true;
@@ -290,31 +296,34 @@ function view(_div, _onSelectRow)
 
   function draw(d)
   {  if (d.error!=undefined && !d.error)
-     {   var i, j, pag='', s ='', sfld=[], hdr='';
+     {   // Append translations
+         if (d.locale!==undefined)  lc = $.extend(lc, d.locale);
+        
+         var i, j, pag='', s ='', sfld=[], hdr='';
          fds = d.h;
-         title = d.title;
+         title = T(d.name);
          if (d.view!=undefined) v=d.view; // Если загрузились по коду
          if (d.edit_width!=undefined) edit_width = d.edit_width;
-        
-         // рассчёт числа страниц    
-                         
+                           
         // заголовок таблицы
         hdr+='<table class="table table-striped"><thead>';
         hdr+='<tr><th style="width:40pt"><input class="w-chb-all" title="'+T('SELECT_ALL')+'" type="checkbox" /></th>';
         for (i in d.h) 
-        { var r = d.h[i];
+        { let r = d.h[i];
+          let w = '';
+          if (r.width!='') w=' style="width:'+r.width+'pt"';
           if (r.visable==1 && r.ingrid==1 && r.widget_id!=2) 
-          { hdr+='<th>'+r.ftitle+'</th>';
+          { hdr+='<th'+w+'>'+T(r.fname)+'</th>';
             pcols.push(i);
           }
           if (r.pkey==1) pkeys.push(i);
-          if (r.searchable==1) sfld.push(r.ftitle);
+          if (r.searchable==1) sfld.push(T(r.fname));
         }
         hdr+='</tr></thead><tbody>';
 
 // панель
 s+='<div class="w-panel">';
-s+='<div class="row"><div class="col-lg-3"> <span class="w-label">'+d.title+'</span></div>';
+s+='<div class="row"><div class="col-lg-3"> <span class="w-label">'+T(d.name)+'</span></div>';
 
 // Кнопки
 
@@ -404,7 +413,7 @@ s+='</div>\
   }
   
   gl_Locales.translate('pages/view', function(fu) {
-     T=fu;     
+     gl_T=fu; // set global translation function
      load();     
   });
   
