@@ -19,10 +19,11 @@ function confer(_id)
     frm=$('#fldattr');
     for (i in a)
     { var k = a[i];
-      // console.log($('#'+a[i]) );
+      // console.log($('#'+a[i]) );      
       if (fields[f][k]==1) frm.find('#'+k)[0].checked=true;
       else frm.find('#'+k)[0].checked=false;
-    }    
+    } 
+    console.log(fld_upd);
   }
   
   function onFieldSelect(e)
@@ -101,7 +102,16 @@ function confer(_id)
     id = inp.attr('id');
     if (inp.attr('type')=='text') fld_upd[n][id] = inp.val();
     if (inp.attr('type')=='checkbox') 
-    { if (inp[0].checked) fld_upd[n][id]=1; else fld_upd[n][id]=0;      
+    { if (inp[0].checked)
+      { 
+        fld_upd[n][id]=1;
+        fields[i][id]=1;
+        console.log(fields[i]);
+      } else 
+      { 
+         fld_upd[n][id]=0;      
+         fields[i][id]=0;         
+      }
     }
     if (inp.prop('tagName').toLowerCase()=='select') fld_upd[n][id] = inp.find('option:selected').val();
   }

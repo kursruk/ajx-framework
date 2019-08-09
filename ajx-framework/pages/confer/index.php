@@ -5,7 +5,7 @@
     border-bottom: solid #ddd 1px;
     border-radius: 0 0px 4px 4px;
   }
-  #flist { overflow-y: scroll;   height: 420px; }
+  #flist { overflow-y: scroll;   height: 206pt; }
 </style>
 
 <div>
@@ -15,7 +15,7 @@
                    <select class="form-control s-conf-selector" data-model="/pages/confer/Model/conf">
                    </select>
                    <span class="input-group-btn">
-                     <button  class="btn btn-primary bt-add-config" type="button" title="Добавить конфигурацию">Добавить</button>
+                     <button  class="btn btn-primary bt-add-config" type="button" title="<?=T('ADD_NEW_CONFIG')?>"><?=T('New')?></button>
                    </span>
                 </div>
                 <div id="tree"></div>
@@ -24,29 +24,29 @@
             
             <div class="add-view" style="display:none">
                 <div class="form-group">
-                     <button type="button" class="btn btn-success b-create-view">Создать представление по таблице</button>
+                     <button type="button" class="btn btn-success b-create-view"><?=T('NEW_VIEW')?></button>
                 </div>
             </div>
          
             <div id="editor" class="view-editor">
                 <div class="form-group">
-                  <label for="tname">Таблица</label>
-                  <input type="text" class="form-control" id="tname" placeholder="Таблица">
+                  <label for="tname"><?=T('Table')?></label>
+                  <input type="text" class="form-control" id="tname" placeholder="<?=T('Table')?>">
                 </div>
                 <div class="form-group">
-                  <label for="name">Идентификатор</label>
-                  <input type="text" class="form-control" id="name" placeholder="Идентификатор">
+                  <label for="name"><?=T('Identificator')?></label>
+                  <input type="text" class="form-control" id="name" placeholder="<?=T('Identificator')?>">
                 </div>
                 <div class="form-group">
-                  <label for="vtitle">Наименование</label>
-                  <input type="text" class="form-control" id="vtitle" placeholder="Наименование">
+                  <label for="vtitle"><?=T('Name')?></label>
+                  <input type="text" class="form-control" id="vtitle" placeholder="<?=T('Name')?>">
                 </div>
                  <div class="form-group">
-                    <label>Форма редактирования</label>
+                    <label><?=T('EDIT_FORM')?></label>
                     <select id="edit_width" class="input-large form-control">
-                        <option value="1" selected="selected">узкая</option>
-                        <option value="2">средняя</option>
-                        <option value="3">широкая</option>
+                        <option value="1" selected="selected"><?=T('Slim')?></option>
+                        <option value="2"><?=T('Normal')?></option>
+                        <option value="3"><?=T('Wide')?></option>
                     </select>
                   </div>   
                 <div id="flist" class="list-group">
@@ -57,9 +57,9 @@
                 <div class="view-editor">
                   <!-- Nav tabs -->
                   <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#fileds" aria-controls="fileds" role="tab" data-toggle="tab">Свойства поля</a></li>
-                    <li role="presentation"><a href="#refs" aria-controls="refs" role="tab" data-toggle="tab">Связи</a></li>
-                    <li role="presentation"><a href="#acl" aria-controls="acl" role="tab" data-toggle="tab">Права доступа</a></li>
+                    <li role="presentation" class="active"><a href="#fileds" aria-controls="fileds" role="tab" data-toggle="tab"><?=T('FIELD_PROPERTIES')?></a></li>
+                    <li role="presentation"><a href="#refs" aria-controls="refs" role="tab" data-toggle="tab"><?=T('References')?></a></li>
+                    <li role="presentation"><a href="#acl" aria-controls="acl" role="tab" data-toggle="tab"><?=T('ACCESS_RIGHTS')?></a></li>
                   </ul>
 
                   <!-- Tab panes -->
@@ -69,8 +69,8 @@
                       <div id="fldattr" class="panel-body w-tabpane">
                            <form>
                               <div class="form-group">
-                                <label for="fname">Поле</label>
-                                <input type="text" class="form-control" id="fname" placeholder="Поле">
+                                <label for="fname"><?=T('Field')?></label>
+                                <input type="text" class="form-control" id="fname" placeholder="<?=T('Field')?>">
                               </div>
                               <div class="form-group">
                                 <label for="ftitle">Подпись</label>

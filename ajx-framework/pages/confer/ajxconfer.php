@@ -100,7 +100,7 @@
        
        $tree = array();
        $n = new stdClass();
-       $n->text = "Таблицы";
+       $n->text = T('Tables');
        $n->state = $state;
        $n->nodes = array();
        foreach($tables as $t)
@@ -114,7 +114,7 @@
        $tree[] = $n;
 
        $n = new stdClass();
-       $n->text = "Формы";
+       $n->text = T('Forms');
        $qr = $db->query('select id,vtitle from md_views where conf_id=:id order by 2', array('id'=>$conf) );
        $tables = $qr->fetchAll(PDO::FETCH_NUM);
        $n->nodes = array();
