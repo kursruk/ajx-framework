@@ -53,6 +53,15 @@ CREATE TABLE mc_pages
 ) DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE mc_user_settings
+(  user_id integer NOT NULL,
+   name varchar(128) not null,
+   json text  not null,   
+   PRIMARY KEY (user_id, name),
+   FOREIGN KEY (user_id) references mc_users(id) on delete cascade on update cascade
+) DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE settings
 (  name varchar(128) not null,
    json text  not null,

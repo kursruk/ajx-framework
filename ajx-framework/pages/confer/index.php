@@ -38,8 +38,8 @@
                   <input type="text" class="form-control" id="name" placeholder="<?=T('Identificator')?>">
                 </div>
                 <div class="form-group">
-                  <label for="vtitle"><?=T('Name')?></label>
-                  <input type="text" class="form-control" id="vtitle" placeholder="<?=T('Name')?>">
+                  <label for="vtitle"><?=T('Title')?></label>
+                  <input type="text" class="form-control" id="vtitle" placeholder="<?=T('Title')?>">
                 </div>
                  <div class="form-group">
                     <label><?=T('EDIT_FORM')?></label>
@@ -73,38 +73,38 @@
                                 <input type="text" class="form-control" id="fname" placeholder="<?=T('Field')?>">
                               </div>
                               <div class="form-group">
-                                <label for="ftitle">Подпись</label>
-                                <input type="text" class="form-control" id="ftitle" placeholder="Подпись">
+                                <label for="ftitle"><?=T('Title')?></label>
+                                <input type="text" class="form-control" id="ftitle" placeholder="<?=T('Title')?>">
                               </div>
                               <div class="form-group">
-                                <label for="width">Ширина</label>
-                                <input type="text" class="form-control" id="width" placeholder="Ширина">
+                                <label for="width"><?=T('Width')?></label>
+                                <input type="text" class="form-control" id="width" placeholder="<?=T('Width')?>">
                               </div>
-                              <div class="checkbox"><label><input id="pkey" type="checkbox">Первичный ключ</label></div>
-                              <div class="checkbox"><label><input id="visable" type="checkbox">Показать поле пользователю</label></div>
-                              <div class="checkbox"><label><input id="ingrid" type="checkbox">Включить в списочную форму</label></div>
-                              <div class="checkbox"><label><input id="searchable" type="checkbox">Включить поиск по полю</label></div>
-                              <div class="checkbox"><label><input id="required" type="checkbox">Обязательно для заполнения</label></div>
+                              <div class="checkbox"><label><input id="pkey" type="checkbox"><?=T('PRIMARY_KEY')?></label></div>
+                              <div class="checkbox"><label><input id="visable" type="checkbox"><?=T('SHOW_FIELD')?></label></div>
+                              <div class="checkbox"><label><input id="ingrid" type="checkbox"><?=T('IN_GRID')?></label></div>
+                              <div class="checkbox"><label><input id="searchable" type="checkbox"><?=T('SEARCHABLE')?></label></div>
+                              <div class="checkbox"><label><input id="required" type="checkbox"><?=T('REQUIRED')?></label></div>
                               <div class="form-group">
-                                <label for="width">Значение по умолчанию</label>
-                                <input type="text" class="form-control" id="default_value" placeholder="Значение по умолчанию">
+                                <label for="width"><?=T('DEFAULT_VALUE')?></label>
+                                <input type="text" class="form-control" id="default_value" placeholder="<?=T('DEFAULT_VALUE')?>">
                               </div>    
                                 <div class="form-group">
-                                  <label>Тип виджета</label>
+                                  <label><?=T('WIDGET_TYPE')?></label>
                                   <select id="widget_id" class="input-large form-control">
-                                      <option value="null" selected="selected">не выбран</option>
-                                      <option value="1">справочное поле</option>
-                                      <option value="2">подчинённая таблица</option>
-                                      <option value="3">многострочный текст</option>
-                                      <option value="4">флажок</option>
-                                      <option value="5">дата</option>
-                                      <option value="6">дата/время</option>
-                                      <option value="7">время</option>
+                                      <option value="null" selected="selected"><?=T('NOT_SELECTED')?></option>
+                                      <option value="1"><?=T('REF_FIELD')?></option>
+                                      <option value="2"><?=T('CHILD_TABLE')?></option>
+                                      <option value="3"><?=T('TEXTAREA')?></option>
+                                      <option value="4"><?=T('CHECKBOX')?></option>
+                                      <option value="5"><?=T('DATE')?></option>
+                                      <option value="6"><?=T('DATE_TIME')?></option>
+                                      <option value="7"><?=T('TIME')?></option>
                                   </select>
                                 </div>   
                             </form>
                        </div>
-                       <button id="btnSave" class="btn btn-default" style="margin-top: 20px;">Сохранить</button>
+                       <button id="btnSave" class="btn btn-primary btn-lg" style="margin-top: 20px;"><?=T('Save')?></button>
                     </div>
 
                     <div role="tabpanel" class="tab-pane" id="refs">
