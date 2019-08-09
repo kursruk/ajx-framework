@@ -6,6 +6,8 @@
         $this->path = $path.'/index.php';
         $this->cfg = $cfg;
         $this->seg = $seg;
+        $cfg->addJS('/js',"common.js");
+        $cfg->addJS('/js',"models.js");
         $cfg->addJS('/js',"view.js?v3");
      }
      function drawView($qr, $h)

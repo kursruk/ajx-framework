@@ -1,36 +1,44 @@
 function wModal(id, title, panel, classN)
-{  var div = null;
+{  let div = null;
+   let T = function(v){ return v; } // Default translation function
+   let self = this;
+   
    this.draw = function(body, init)
-   {  div=$('#linked-modals #'+id);
-      if (div.length>0)
-      {  div.find('.modal-body').html(body);
-         if (init!=undefined) init(div);
-         this.show();
-      } else
-      {  var s='';
-         if (classN==undefined) classN='';
-     s+='<div class="modal fade w-form '+classN+'" id="'+id+'" tabindex="-1" role="dialog">\
-      <div class="modal-dialog">\
-        <div class="modal-content">\
-          <div class="modal-header">\
-            <button type="button" class="close" data-dismiss="modal" aria-label="закрыть"><span aria-hidden="true">&times;</span></button>\
-            <h4 class="modal-title">'+title+'</h4>\
-          </div>\
-          <div class="modal-body">';
-          s+= body;
-          s+='  </div>\
-          <div class="modal-footer">';
-          s+=panel;
-          s+='</div>\
-        </div>\
-      </div>\
-    </div>';
-        $('#linked-modals').append(s);
-        div=$('#linked-modals #'+id);
-        if (init!=undefined) init(div);
-        div.modal();
-      }
-      this.dv = div;
+   { gl_Locales.translate('pages/view', function(fu) {
+     
+        T=fu;
+        
+         div=$('#linked-modals #'+id);
+         if (div.length>0)
+         {  div.find('.modal-body').html(body);
+            if (init!=undefined) init(div);
+            self.show();
+         } else
+         {  let s='';
+            if (classN==undefined) classN='';
+        s+='<div class="modal fade w-form '+classN+'" id="'+id+'" tabindex="-1" role="dialog">\
+         <div class="modal-dialog">\
+           <div class="modal-content">\
+             <div class="modal-header">\
+               <button type="button" class="close" data-dismiss="modal" aria-label="'+T('Close')+'"><span aria-hidden="true">&times;</span></button>\
+               <h4 class="modal-title">'+title+'</h4>\
+             </div>\
+             <div class="modal-body">';
+             s+= body;
+             s+='  </div>\
+             <div class="modal-footer">';
+             s+=panel;
+             s+='</div>\
+           </div>\
+         </div>\
+       </div>';
+           $('#linked-modals').append(s);
+           div=$('#linked-modals #'+id);
+           if (init!=undefined) init(div);
+           div.modal();
+         }
+         self.dv = div;
+      });
    }
    
    this.show = function()
@@ -45,14 +53,13 @@ function wModal(id, title, panel, classN)
 }
 
 
-
+gl_views = 0;
 
 function view(_div, _onSelectRow)
 { 
   let T = function(v){ return v; } // Default translation function
-   
-  var div = _div, title='';
-  var v, pkeys = [], pcols = [], pg_rows, total_rows, c_page = 1, edit_width=1,
+  let div = _div, title='';
+  let v, pkeys = [], pcols = [], pg_rows, edit_width=1,
   n_pages, self = this, fds, gsearch='', formkeys={}, refs={}, get_total = true,
   onSelectRow = _onSelectRow;
   var fkeys = '', childref=null; // Внешние ключи подчинённой таблицы
@@ -60,28 +67,11 @@ function view(_div, _onSelectRow)
   var frmNew = null;
   var wcl=['','middle','large']; // классы размеров форм
   
-  
-  function drawPages()
-  {  var i, m;
-     var s='<ul class="pagination">';
-     if (n_pages==1) return '';     
-     i=Math.floor((c_page-1)/10)*10+1;
-     // if (i>n_pages) i=n_pages-1;
-     m=i+9;
-     
-     if (c_page>10) s+='<li data-id="-"><a href="javascript:" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
-     for (; i<=m && i<=n_pages; i++)
-     {   if (c_page==i) s+='<li class="active" data-id="'+i+'"><a href="javascript:">'+i+'</a></li>'; else
-         s+='<li data-id="'+i+'"><a href="javascript:" >'+i+'</a></li>';
-     }
-     if (c_page+10<=n_pages) s+='<li data-id="+"><a href="javascript:" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li></ul>';
-     return s;
-  }  
-   
-  function newTotal(total)
-  { total_rows = total;
-    n_pages = Math.ceil(total_rows/pg_rows); // число страниц
-  }
+  gl_views++;
+  $(div).attr('id', 'view_'+gl_views);
+  let pager = new modelPagination('#view_'+gl_views + ' .w-pager');
+       
+    
 
   function updateDisplayLinks(ref, eForm)
   {  var p=[], i, ar = eForm.dv.find('div.w-ref[data-ref='+ref.ref+']');
@@ -188,7 +178,7 @@ function view(_div, _onSelectRow)
     }
     if (isInsert!=undefined && isInsert) data.insert = true;
     ajx('/pages/view/SaveView/'+v, data , function(){ afterSave(); form.hide(); });
-    var p = {page:c_page, pg_rows:pg_rows}
+    var p = {page:pager.currentPage(), pg_rows:pg_rows}
     if (gsearch!='') p.search=gsearch;
     if (childref!=null) { p.childref = childref; p.fkeys = fkeys; }
     ajx('/pages/view/loadPage/'+v, p ,drawData);
@@ -198,9 +188,9 @@ function view(_div, _onSelectRow)
   {  console.log(v, 'New:');
    
      if (frmNew==null) 
-     { frmNew = new wModal('frmNew'+v, 'Добавить: '+title,
-       '<button type="button" class="btn btn-default w-close">Закрыть</button>\
-  <button type="button" class="btn btn-primary w-btnsave">Добавить</button>', wcl[edit_width-1]);
+     { frmNew = new wModal('frmNew'+v, T('Add')+': '+title,
+       '<button type="button" class="btn btn-default w-close">'+T('Close')+'</button>\
+  <button type="button" class="btn btn-primary w-btnsave">'+T('Add')+'</button>', wcl[edit_width-1]);
        frmNew.draw(drawFormInputs({},''));
        frmNew.dv.find('.w-close').click( function(){ frmNew.hide(); });
        frmNew.dv.find('.w-setlink').unbind().click(function(e){ setLink(e, frmNew); });
@@ -258,9 +248,9 @@ function view(_div, _onSelectRow)
       s = drawFormInputs(d, keys);
 
       if (frmEdit==null) 
-      { frmEdit = new wModal('frm'+v, 'Редактирование: '+d.title,
-       '<button type="button" class="btn btn-default w-close">Закрыть</button>\
-<button type="button" class="btn btn-primary w-btnsave">Сохранить</button>', wcl[edit_width-1]);
+      { frmEdit = new wModal('frm'+v, T('Edit')+': '+d.title,
+       '<button type="button" class="btn btn-default w-close">'+T('Close')+'</button>\
+<button type="button" class="btn btn-primary w-btnsave">'+T('Save')+'</button>', wcl[edit_width-1]);
         first = true;
       }
       
@@ -306,13 +296,11 @@ function view(_div, _onSelectRow)
          if (d.view!=undefined) v=d.view; // Если загрузились по коду
          if (d.edit_width!=undefined) edit_width = d.edit_width;
         
-         // рассчёт числа страниц
-         pg_rows = d.pg_rows;  
-         newTotal(d.total);
-
+         // рассчёт числа страниц    
+                         
         // заголовок таблицы
         hdr+='<table class="table table-striped"><thead>';
-        hdr+='<tr><th style="width:40pt"><input class="w-chb-all" type="checkbox" /></th>';
+        hdr+='<tr><th style="width:40pt"><input class="w-chb-all" title="'+T('SELECT_ALL')+'" type="checkbox" /></th>';
         for (i in d.h) 
         { var r = d.h[i];
           if (r.visable==1 && r.ingrid==1 && r.widget_id!=2) 
@@ -341,7 +329,7 @@ s+=' </div>\
 
 // поиск
 s+='<div class="col-lg-6">';
-if (n_pages>1 && sfld.length>0) s+='<div class="input-group"> \
+if (sfld.length>0) s+='<div class="input-group"> \
 <input type="text" class="form-control w-stext" data-toggle="tooltip" data-placement="top" title="'+sfld.join('; ')+'" placeholder="'+T('Search')+'"> \
 <span class="input-group-btn"> <button class="btn btn-default w-search" type="button">'+T('Search')+'</button> </span> \
 </div>';
@@ -350,20 +338,23 @@ s+='</div>\
 </div>\
 </div>';
 
-
-        // пагинация        
-        if (n_pages>1) pag='<nav class="w-pager">'+drawPages()+'</nav>';
-
         s+=hdr;
         
         // тело таблицы
         s+=drawTableRows(d);
         s+='</tbody></table>';
-        s+=pag;
+        s+='<div class="w-pager"></div>';        
         
         div.innerHTML=s;
+        
+        // console.log('draw', d);        
+        if (d.pg_rows!==undefined) pg_rows = d.pg_rows;
+        if (d.total!==undefined) 
+        {  pager.setTotal(d.total, pg_rows);
+        }  
+      
        // console.log(d, pkeys, pcols);
-        $(div).find('nav.w-pager li').click(function(li){ self.pgClick(li); });
+       //  $(div).find('nav.w-pager li').click(function(li){ self.pgClick(li); });
         $(div).find('button.w-search').click(function(){ self.search(); });
         $(div).find('button.w-btn-new').click(function(){ self.addNew(); });
         $(div).find('input.w-stext').keypress(function(e){ if (e.charCode==13) self.search(); }).tooltip();
@@ -379,14 +370,12 @@ s+='</div>\
   
   function drawData(d)
   {   var s = drawTableRows(d);
-      $(div).find('tbody').html(s);      
-      if (d.total!=undefined) 
-      { c_page = 1;
-        newTotal(d.total);
-      } else c_page = d.page;
-      $(div).find('nav.w-pager').html( drawPages() );
-      $(div).find('nav.w-pager li').click(function(li){ self.pgClick(li); });
-     
+      $(div).find('tbody').html(s);  
+      // console.log('DrawData', d);
+      if (d.pg_rows!==undefined) pg_rows = d.pg_rows;
+      if (d.total!==undefined) 
+      {  pager.setTotal(d.total, pg_rows);
+      }      
       if (onSelectRow!=undefined)  $(div).find('table>tbody>tr').click(onSelectRow);
       else $(div).find('table>tbody>tr').click(editForm);     
   }
@@ -398,28 +387,25 @@ s+='</div>\
     ajx('/pages/view/loadPage/'+v, p ,drawData);
   }
   
-  this.pgClick = function(li)
-  {  var n = $(li.currentTarget).attr('data-id');
-     if (n=='+') n=c_page+10;
-     if (n=='-') n=c_page-10;
-     // console.log(n, total_rows, v);
-     var p = {page:n, pg_rows:pg_rows}
+  pager.change(function(n){
+     var p = {page:n, pg_rows:pg_rows};
      if (gsearch!='') p.search=gsearch;
      if (childref!=null) { p.childref = childref; p.fkeys = fkeys; }
-     ajx('/pages/view/loadPage/'+v, p ,drawData);
-  }
+     ajx('/pages/view/loadPage/'+v, p ,drawData); 
+  });
   
-  gl_Locales.translate('pages/view', function(fu) {
-
-     T=fu;
-
-     v = $(div).attr('data-view');
+  function load() 
+  {  v = $(div).attr('data-view');
      if (v!=undefined) ajx('/pages/view/load/'+v, draw); else
      { fkeys = $(div).attr('data-keys'), childref = $(div).attr('data-childref'); // lfyys
        if (childref==undefined) childref=null;
        if (childref!=null) ajx('/pages/view/loadChild',{childref:childref, fkeys:fkeys, get_total:true}, draw);
      }
-     
+  }
+  
+  gl_Locales.translate('pages/view', function(fu) {
+     T=fu;     
+     load();     
   });
   
 }

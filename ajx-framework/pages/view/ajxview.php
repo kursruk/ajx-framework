@@ -19,7 +19,7 @@
       
       function ajxload()
       {  if (!isset($this->seg[3])) return $this->error('Не передано название представления!',4001);
-         $pg_rows = 1*post('pg_rows', $this->cfg->pg_rows);
+         $pg_rows = 7; // 1*post('pg_rows', $this->cfg->pg_rows);
          $v = $this->seg[3];
          $db = $this->cfg->db;
          $sql = $this->mkSQL($v, true).' limit '.$pg_rows;
