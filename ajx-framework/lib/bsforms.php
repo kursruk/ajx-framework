@@ -61,7 +61,7 @@
        
        return ' <div class="form-group">
             <label for="'.$name.'">'.$label.'</label>
-            <input type="'.$type.'" class="form-control" data-control-type="basic" '.
+            <input type="'.$type.'" class="form-control" data-control-type="basic" autocomplete="none" '.
             $this->getValid().'id="'.$name.'" placeholder="'.$label.'">
           </div>';
     }
