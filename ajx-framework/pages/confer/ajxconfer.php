@@ -64,7 +64,7 @@
        $db->query('update md_fields set required=0 '.
 ' where view_id=:view_id and fname in '.
 ' (select COLUMN_NAME from information_schema.columns '.
-" where TABLE_SCHEMA=:database_name and IS_NULLABLE='NO' ".
+" where TABLE_SCHEMA=:database_name and IS_NULLABLE='YES' ".
 ' and TABLE_NAME=:tname);',['tname'=>$table, 'view_id'=>$v_id, 'database_name'=>$dbname]);
 
        // Set primary keys
@@ -138,11 +138,22 @@
     {  $id = post('id', null);
        if ($id!=null)
        { $db = $this->cfg->db;
-         $qr = $db->query('select * from md_views where  id=:id', array('id'=>$id) );
+         $qr = $db->query('select * from md_views where  id=:id', ['id'=>$id] );
          $this->res->view =  $db->fetchSingle($qr);
          
-         $qr = $db->query('select * from md_fields where view_id=:id order by id', array('id'=>$id) );
+         $qr = $db->query('select * from md_fields where view_id=:id order by id', ['id'=>$id] );
          $this->res->fields = $qr->fetchAll(PDO::FETCH_OBJ);
+            
+         $dbname = $this->cfg->dbname;
+         $sql  = 'select v.id, v.name, UPDATE_RULE as on_update,DELETE_RULE as on_delete'
+                 .' from information_schema.REFERENTIAL_CONSTRAINTS r'
+                 .' join md_views v on v.conf_id=:conf_id and r.REFERENCED_TABLE_NAME=v.tname'
+                 .' where CONSTRAINT_SCHEMA=:dbname and TABLE_NAME=:tname';
+         
+         $qr = $db->query($sql, ['tname'=>$this->res->view->tname,
+          'dbname'=>$dbname, 'conf_id'=>$this->res->view->conf_id] );
+         $this->res->refs = $qr->fetchAll(PDO::FETCH_OBJ);
+    
 
          echo json_encode($this->res);
        } else $this->error('Отстутствует обязательный параметр id',5001);

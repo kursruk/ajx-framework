@@ -49,6 +49,10 @@ function wModal(id, title, panel, classN)
    this.hide = function()
    { if (div!=null) div.modal('hide');   
    }
+   
+   this.resetForm = function()
+   { div.find('form')[0].reset();
+   }
 
    return this;
 }
@@ -196,7 +200,7 @@ function view(_div, _onSelectRow)
      { frmNew = new wModal('frmNew'+v, T('Add')+': '+title,
        '<button type="button" class="btn btn-default w-close">'+T('Close')+'</button>\
   <button type="button" class="btn btn-primary w-btnsave">'+T('Add')+'</button>', wcl[edit_width-1]);
-       frmNew.draw(drawFormInputs({},''));
+       frmNew.draw('<form>'+drawFormInputs({},'', true)+'</form>');
        frmNew.dv.find('.w-close').click( function(){ frmNew.hide(); });
        frmNew.dv.find('.w-setlink').unbind().click(function(e){ setLink(e, frmNew); });
        frmNew.dv.find('.w-btnsave').unbind().click(function(){ formSave(frmNew, true); });
@@ -211,19 +215,28 @@ function view(_div, _onSelectRow)
        */
       
       
-     } else frmNew.show();
+     } else 
+     {  frmNew.resetForm();
+        frmNew.show();
+     }
   }
   
-  function drawFormInputs(d, keys)
-  {   function addRow(label, input)
+  function drawFormInputs(d, keys, isAdd)
+  {  if (isAdd ==undefined) isAdd = false;
+      
+     function addRow(label, input)
       { return '<div class="row"><div class="col-lg-4">'+label+'</div><div class="col-lg-8">'+input+'</div></div>';
       }
     
-      var i, s = '';
+      let i, s = '';
       for (i in fds)
-      {  var r = fds[i];
-         var val = '';
+      {  let r = fds[i];
+         let val = '';
          if (d.row!=undefined && d.row[i]!=undefined) val = d.row[i];
+         if (isAdd) 
+         { val = '';
+           if (r.default_value!=null) val = r.default_value;
+         }
          if (r.pkey==1) formkeys[r.fname] = val;
          if (r.visable==1) 
          {   let t = "text";

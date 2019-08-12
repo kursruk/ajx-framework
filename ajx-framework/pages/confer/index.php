@@ -115,8 +115,7 @@
                            <form>
                               <div class="form-group">
                                  <label for="width"><?=T('SUGGESTED_REFS')?></label>
-                                 <div class="list-group">
-                                 </div>
+                                 <div id="reflist" class="list-group"></div>
                               </div>
                            </form>
                        </div>                      
