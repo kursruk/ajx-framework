@@ -50,8 +50,7 @@
                         <option value="3"><?=T('Wide')?></option>
                     </select>
                   </div>   
-                <div id="flist" class="list-group">
-                </div>
+                <div id="flist" class="list-group"></div>
                 <a class="l-check" target="__blank" href="/view"><?=T('CHECK_TABLE')?></a><br>
                 <a class="l-translate" target="__blank" href="javascript:"><?=T('TRANSLATE')?></a>
             </div>
@@ -87,6 +86,7 @@
                               <div class="checkbox"><label><input id="visable" type="checkbox"><?=T('SHOW_FIELD')?></label></div>
                               <div class="checkbox"><label><input id="ingrid" type="checkbox"><?=T('IN_GRID')?></label></div>
                               <div class="checkbox"><label><input id="searchable" type="checkbox"><?=T('SEARCHABLE')?></label></div>
+                              <div class="checkbox"><label><input id="sortable" type="checkbox"><?=T('SORTABLE')?></label></div>
                               <div class="checkbox"><label><input id="required" type="checkbox"><?=T('REQUIRED')?></label></div>
                               <div class="form-group">
                                 <label for="width"><?=T('DEFAULT_VALUE')?></label>
@@ -96,13 +96,13 @@
                                   <label><?=T('WIDGET_TYPE')?></label>
                                   <select id="widget_id" class="input-large form-control">
                                       <option value="null" selected="selected"><?=T('NOT_SELECTED')?></option>
-                                      <option value="1"><?=T('REF_FIELD')?></option>
-                                      <option value="2"><?=T('CHILD_TABLE')?></option>
-                                      <option value="3"><?=T('TEXTAREA')?></option>
-                                      <option value="4"><?=T('CHECKBOX')?></option>
-                                      <option value="5"><?=T('DATE')?></option>
-                                      <option value="6"><?=T('DATE_TIME')?></option>
-                                      <option value="7"><?=T('TIME')?></option>
+                                      <?php
+                                         $db = $this->cfg->db;
+                                         $qr = $db->query("select * from md_widgets");
+                                         while ($r = $db->fetchSingle($qr))
+                                         {  echo '<option value="'.$r->id.'">'.T($r->wname).'</option>';
+                                         }       
+                                      ?>
                                   </select>
                                 </div>   
                             </form>
@@ -112,8 +112,14 @@
 
                     <div role="tabpanel" class="tab-pane" id="refs">
                        <div id="edit-refs" class="panel-body w-tabpane">
-                       </div>
-                      
+                           <form>
+                              <div class="form-group">
+                                 <label for="width"><?=T('SUGGESTED_REFS')?></label>
+                                 <div class="list-group">
+                                 </div>
+                              </div>
+                           </form>
+                       </div>                      
                     </div>
 
                     <div role="tabpanel" class="tab-pane" id="acl">

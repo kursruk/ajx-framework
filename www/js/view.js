@@ -311,9 +311,11 @@ function view(_div, _onSelectRow)
         for (i in d.h) 
         { let r = d.h[i];
           let w = '';
-          if (r.width!='') w=' style="width:'+r.width+'pt"';
+          let sort='';
+          if (r.sortable==1) sort=' class="c-sort"';
+          if (r.width!='' && r.width!=null) w=' style="width:'+r.width+'pt"';
           if (r.visable==1 && r.ingrid==1 && r.widget_id!=2) 
-          { hdr+='<th'+w+'>'+T(r.fname)+'</th>';
+          { hdr+='<th'+w+sort+'>'+T(r.fname)+'</th>';
             pcols.push(i);
           }
           if (r.pkey==1) pkeys.push(i);
@@ -374,6 +376,8 @@ s+='</div>\
         });
         if (onSelectRow!=undefined)  $(div).find('table>tbody>tr').click(onSelectRow);
         else $(div).find('table>tbody>tr').click(editForm);
+        $(div).find('.c-sort').click( self.sort );
+        
      }  
   }
   
@@ -387,6 +391,37 @@ s+='</div>\
       }      
       if (onSelectRow!=undefined)  $(div).find('table>tbody>tr').click(onSelectRow);
       else $(div).find('table>tbody>tr').click(editForm);     
+  }
+  
+  this.sort = function(e)
+  {  let f = fds[  pcols[ e.currentTarget.cellIndex-1] ];
+     let sort_type = 0;
+     if ($(e.target).prop('srt')!=undefined) sort_type = $(e.target).prop('srt');
+     sort_type = (sort_type+1) % 3;     
+     
+     let td = $(e.target);
+     td.parent().find('.c-sort').prop('srt', 0)
+      .removeClass('sort-desc')
+      .removeClass('sort-asc');
+     
+     $(e.target).prop('srt', sort_type);
+     
+     switch (sort_type)
+     {  case 1: td.addClass('sort-asc');  break;
+        case 2: td.addClass('sort-desc');  break;        
+     }
+         
+     let p = {page:1, pg_rows:pg_rows}
+     let s = $(div).find('input.w-stext').val();
+     if (s!='') p.search = s;     
+     if (sort_type>0) 
+     {  let sort = {};
+        sort.id = f.id;
+        sort.order = sort_type;
+        p.sort = [sort];
+     }
+     ajx('/pages/view/loadPage/'+v, p ,drawData);
+     console.log(f.fname, sort_type);
   }
   
   this.search = function()

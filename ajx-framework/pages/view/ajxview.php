@@ -142,7 +142,8 @@
         if (empty($vr))  throw new Exception('Представление не найдено!',404);
         
         $qr->closeCursor();
-        $qr = $db->query('select * from md_fields where view_id=:id order by id', array('id'=>$vr->id) );
+        $qr = $db->query('select f.*, w.wname from md_fields f '
+        .'left outer join md_widgets w on f.widget_id = w.id where view_id=:id order by id', array('id'=>$vr->id) );
         $h = $qr->fetchAll(PDO::FETCH_OBJ);
         
         $flist = array();
@@ -171,7 +172,14 @@
                $i++;
             }
         }
-
+        
+        $asort = post('sort', null);
+        $ksort = [];
+        $fsort = [];
+        if ($asort!==null)
+        foreach($asort as $k=>$v) $ksort[$v['id']]=$k;
+        
+        
         foreach($h as $i=>$r) 
         {  // Соберём массив для отбора строки по первичному ключу
           if ($rowkeys!='' &&  $r->pkey==1 && isset($rkeys[$npk]))
@@ -184,12 +192,25 @@
 join md_fields f on l.display_field_id=f.id where l.field_id=:id',
               array('id'=>$r->id ) );
               $lf = 'r'.$r->ref_id.'.`'.$db->fetchSingleValue($ql).'`';
+              $fn=$lf;
               $flist[] = $lf;
               $slinks[$r->fname] = $lf; // Добавим исключение для where
            } else
-           if ($r->widget_id!=2 ) $flist[] = 'r.`'.$r->fname.'`'; // исключаем ссылочное поле и подчинённые таблицы
+           if ($r->widget_id!=2 ) 
+           {  $fn = 'r.`'.$r->fname.'`'; 
+              $flist[] = $fn; // исключаем ссылочное поле и подчинённые таблицы
+           }
+           if (isset($ksort[$r->id]))
+           {  $si =  $ksort[$r->id];
+              $sort_f = $fn;
+              if ($asort[$si]['order']==2) $sort_f.=' desc';
+              $fsort[ $si ] = $sort_f;
+           }
            if ($r->searchable==1) $slist[] = $r->fname;
         }
+                
+        $order = '';
+        if (!empty($fsort)) $order = ' order by '.implode(',', $fsort).' ';
 
         if ($metainf) 
         {  $this->res->h = $h;
@@ -244,7 +265,7 @@ join md_fields f on l.display_field_id=f.id where l.field_id=:id',
         // $this->res->wk = $wk;
         // $this->res->wh = $wh; 
         
-        return 'select '.implode(',',$flist).' from '.$vr->tname.' r '.$j.$wh;
+        return 'select '.implode(',',$flist).' from '.$vr->tname.' r '.$j.$wh.$order;
       }
       
       // Загрузим данные формы

@@ -16,7 +16,7 @@ function confer(_id)
     $('#fldattr #default_value').val(fields[f].default_value);
     $('#fldattr #widget_id').val(fields[f].widget_id);
     
-    var i, a = 'pkey,visable,ingrid,searchable,required'.split(','),
+    var i, a = 'pkey,visable,ingrid,searchable,sortable,required'.split(','),
     frm=$('#fldattr');
     for (i in a)
     { var k = a[i];

@@ -62,9 +62,9 @@ create table md_widgets
   primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 
-insert into md_widgets (id, wname) values (1,'справочное поле'),
-(2,'подчинённая таблица'),(3,'многострочный текст'),(4,'флажок'),
-(5,'дата'),(6,'дата/время'),(7,'время');
+insert into md_widgets (id, wname) values (1,'W_FIELD_BY_REF'),
+(2,'W_CHILD_TABLE'),(3,'W_TEXTAREA'),(4,'W_CHECKBOX'),
+(5,'W_DATE'),(6,'W_DATE_TIME'),(7,'W_TIME');
 
 create table md_fields
 ( id integer not null auto_increment,
