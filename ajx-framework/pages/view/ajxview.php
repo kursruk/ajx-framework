@@ -143,7 +143,7 @@
         
         $qr->closeCursor();
         $qr = $db->query('select f.*, w.wname from md_fields f '
-        .'left outer join md_widgets w on f.widget_id = w.id where view_id=:id order by id', array('id'=>$vr->id) );
+        .'left outer join md_widgets w on f.widget_id = w.id where view_id=:id order by ordr', array('id'=>$vr->id) );
         $h = $qr->fetchAll(PDO::FETCH_OBJ);
         
         $flist = array();

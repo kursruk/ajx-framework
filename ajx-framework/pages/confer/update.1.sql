@@ -4,3 +4,4 @@ alter table md_views drop  master_view;
 
 alter table md_fields add sortable smallint not null default 0;
 alter table md_refs add unique(refname);
+alter table md_fields add ordr smallint;

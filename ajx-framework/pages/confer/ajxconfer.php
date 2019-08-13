@@ -211,6 +211,16 @@ where c.CONSTRAINT_SCHEMA=:dbname and c.TABLE_NAME=:table AND c.REFERENCED_TABLE
        } else $ref_id = $r->id;
        return $ref_id;
     }
+    
+    function ajxSaveFieldsOrder()
+    {  $order = post('order', null);
+       $db = $this->cfg->db;
+       foreach($order as $n=>$id)
+       {  $db->query('update md_fields set ordr=:n where id=:id',
+               ['id'=>$id, 'n'=>($n+1)]);
+       }
+       echo json_encode($this->res);
+    }
 
     function ajxAddFieldsByRef()
     {  $f_id = post('f_id', null);
@@ -247,7 +257,7 @@ where c.CONSTRAINT_SCHEMA=:dbname and c.TABLE_NAME=:table AND c.REFERENCED_TABLE
          $qr = $db->query('select * from md_views where  id=:id', ['id'=>$id] );
          $this->res->view =  $db->fetchSingle($qr);
          
-         $qr = $db->query('select * from md_fields where view_id=:id order by id', ['id'=>$id] );
+         $qr = $db->query('select * from md_fields where view_id=:id order by ordr, id', ['id'=>$id] );
          $this->res->fields = $qr->fetchAll(PDO::FETCH_OBJ);
             
          $dbname = $this->cfg->dbname;

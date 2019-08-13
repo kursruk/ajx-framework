@@ -116,6 +116,19 @@ function confer(_id)
     }
     $('#flist').html(s);
     $('#flist a').click(onFieldSelect);
+    $('#flist').sortable().bind('sortupdate', function(e, ui) {
+        let list = $('#flist a');        
+        let order = {};
+        for (let i=0; i<list.length; i++)
+        { let j = $(list[i]).attr('data-id');
+          order[i] = fields[j].id;
+        }
+        ajx('/pages/confer/SaveFieldsOrder', {order:order}, function(d){
+           console.log(d);
+        });         
+        // Save new order
+    });
+    
     
     s='';
     for (i in d.refs)
@@ -155,13 +168,18 @@ function confer(_id)
   { $('#tree').treeview({data: d.tree}).on('nodeSelected', onTreeSelect);
   }
   
+  function addNull(s)
+  { if (s.trim()=='') return null;
+    return s;
+  }
+  
   function updateField(e)
   { var inp = $(e.target), i, n, id;
     i = active_field;
     n =  fields[i].id;
     if (fld_upd[n]==undefined) fld_upd[n]={};
     id = inp.attr('id');
-    if (inp.attr('type')=='text') fld_upd[n][id] = inp.val();
+    if (inp.attr('type')=='text') fld_upd[n][id] = addNull( inp.val() );
     if (inp.attr('type')=='checkbox') 
     { if (inp[0].checked)
       { 
