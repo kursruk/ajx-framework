@@ -83,8 +83,39 @@
         );
         $vr =  $db->fetchSingle($qr);
         $insert = post('insert', false);
-        if ($insert) $db->insertObject($vr->tname, $_POST['row']); else
-        $db->updateObject($vr->tname, $_POST['row'], $_POST['keys']);
+        $data = $_POST['row'];
+        foreach($data as $k=>$v)
+        { if ($v=='') $data[$k]=NULL;
+        }
+        try
+        {
+           if ($insert) $db->insertObject($vr->tname, $data); else
+           $db->updateObject($vr->tname, $data, $_POST['keys']);
+        } catch (PDOException $e)
+        { $errno = $e->getCode();
+          $errmsg = $e->getMessage();
+          $tr = $this->loadViewTranslation($vr->id);          
+          $this->includePageLocales(__DIR__);
+          switch ($errno)
+          {  case 23000:
+             case 'HY000':                  
+                  $fa =  explode("'", $errmsg);
+                  if (strpos($errmsg, 'Duplicate entry')>0)
+                  {  $f = $fa[3];
+                     $errmsg = sprintf( T('ERR_DUPLICATE_ENTRY'), $tr->$f, $fa[1]);
+                  } else 
+                  {  $f = $fa[1];
+                     $errmsg = T('ERR_REQUIRED_VALUE').' '.$tr->$f;
+                  }
+             break; 
+             case 22001:
+                  $fa =  explode("'", $errmsg);
+                  $f = $fa[1];
+                  $errmsg = T('ERR_STRING_TRUNCATED').' '.$tr->$f;                  
+             break;             
+          }          
+          return $this->error($errmsg, $errno);
+        }        
         echo json_encode($this->res);
       }
       

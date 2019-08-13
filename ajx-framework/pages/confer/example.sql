@@ -20,6 +20,7 @@ create table staff
   position_id integer not null,
   employe_date date not null,
   dismissal_date date null,
+  unique(tabno),
   constraint foreign key (department_id) references departments (id)  on update cascade,
   constraint foreign key (position_id) references job_postions (id)  on update cascade,
   primary key (id)
