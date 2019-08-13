@@ -30,24 +30,27 @@
        echo json_encode($this->res);
     }
     
-    function ajxCreateView()
-    {  $table = post('table', null);
-       $db = $this->cfg->db;
-       $name = $table;
-       $i = 0;
+    function findFreeName($table, $nameColumn, $nameStart)
+    {  $db = $this->cfg->db;
+       $i = 1;
+       $name = $nameStart;
        // Поиск свободного имени 
        do 
-       {  $qr = $db->query('select id from md_views where name=:name', ['name'=>$name] );
+       {  $qr = $db->query("select id from $table where $nameColumn=:name", ['name'=>$name] );
           $r =  $db->fetchSingle($qr);
           if (empty($r)) break;
           $i++;
-          $name = "$name$i";         
+          $name = "$nameStart$i";         
        } while (!empty($r));
-       
-       $conf_id = $this->getConfId();
-       
+       return $name;       
+    }
+    
+    function ajxCreateView()
+    {  $table = post('table', null);
+       $db = $this->cfg->db;
+       $name=$this->findFreeName('md_views', 'name', $table);
+       $conf_id = $this->getConfId();       
        $dbname = $this->cfg->dbname;
-       
        
        $qr = $db->query('insert into md_views (name,vtitle,tname,conf_id) values '.
     '(:name,:vtitle,:tname,:conf_id)',  ['name'=>$name, 'vtitle'=>$name, 'tname'=>$table, 'conf_id'=>$conf_id]);
@@ -131,6 +134,109 @@
 
        $this->res->tree = $tree;
        
+       echo json_encode($this->res);
+    }
+    
+    function ajxGetFieldsByRef()
+    {  $id = post('id', null);
+       if ($id!=null)
+       { $db = $this->cfg->db;         
+         $qr = $db->query('select id, fname, view_id from md_fields where view_id=:id and ingrid=1 and visable=1 order by id', ['id'=>$id] );
+         $this->res->fields = $qr->fetchAll(PDO::FETCH_OBJ);
+         if (isset($this->res->fields[0]))
+         { $view_id = $this->res->fields[0]->view_id;
+           $qr = $db->query('select json from md_view_translations 
+           where view_id=:view_id and lang=:lang', 
+            ['view_id'=>$view_id,'lang'=>$this->cfg->lang] ); 
+           $tr = json_decode( $db->fetchSingleValue($qr) );           
+           $flds = $this->res->fields;
+           foreach($flds as $k=>$v)
+           {  $fname = $flds[$k]->fname;
+              $flds[$k]->title = $tr->$fname;
+           }
+         }
+       } 
+       echo json_encode($this->res);
+    }
+
+    function getView($id)
+    {  $db = $this->cfg->db;
+        $qr = $db->query('select * from md_views where id=:id',
+        ['id'=>$id]);
+        return $db->fetchSingle($qr);
+    }
+    
+    function createAndGetReference()
+    {  $master_view_id = post('master_view_id', null);
+       $view_id = post('view_id', null);
+       $conf_id = $this->getConfId();
+       
+       $db = $this->cfg->db;
+       $qr = $db->query('select * from md_refs  '
+       .' where conf_id=:conf_id and master_view_id=:master_view_id '
+       .' and view_id=:view_id', ['master_view_id'=>$master_view_id,
+       'conf_id'=>$conf_id, 'view_id'=>$view_id ] );
+       
+       $r = $db->fetchSingle($qr); 
+       $ref_id = 0;
+       // If reference is not exists then create it
+       if (empty($r))       
+       {  $w = $this->getView($view_id);
+          $mw = $this->getView($master_view_id);
+          
+          if (empty($w)) throw new Exception( T("VIEW_NOT_FOUND") );
+          if (empty($mw)) throw new Exception( T("MASTER_VIEW_NOT_FOUND") );
+          $ref_name =  $this->findFreeName('md_refs', 'refname', $w->name.'->'.$mw->name );          
+          $this->res->ref_name = $ref_name;
+          $nr = new stdClass();
+          $nr->conf_id = $conf_id;
+          $nr->refname = $ref_name;
+          $nr->rtitle = $ref_name;
+          $nr->view_id = $view_id;
+          $nr->master_view_id = $master_view_id;
+          $db->insertObject('md_refs', $nr);
+          $ref_id = $db->db->lastInsertId();
+          
+          // Add fields of the reference
+          $db->query('insert into md_refs_fields (fk_field, pk_field, ref_id)
+select cu.COLUMN_NAME as fk_field, cu.REFERENCED_COLUMN_NAME as pk_field, :ref_id as ref_id
+from information_schema.REFERENTIAL_CONSTRAINTS as c
+join  information_schema.KEY_COLUMN_USAGE as cu on c.CONSTRAINT_NAME=cu.CONSTRAINT_NAME
+where c.CONSTRAINT_SCHEMA=:dbname and c.TABLE_NAME=:table AND c.REFERENCED_TABLE_NAME=:master_table',
+        ['ref_id'=>$ref_id, 'dbname'=>$this->cfg->dbname, 
+         'table'=>$w->tname,'master_table'=>$mw->tname]);
+         
+                  
+                    
+       } else $ref_id = $r->id;
+       return $ref_id;
+    }
+
+    function ajxAddFieldsByRef()
+    {  $f_id = post('f_id', null);
+       $view_id = 
+       
+       $db = $this->cfg->db;
+       $ref_id = $this->createAndGetReference();
+       // get field name 
+       $qr = $db->query('select * from md_fields where id=:id',['id'=>$f_id]);        
+       $f =  $db->fetchSingle($qr);
+       if (empty($f)) throw new Exception(T('DISPLAY_FIELD_NOT_FOUND'));
+              
+       $nr = new stdClass();
+       $nr->fname = 
+            $this->findFreeName('md_fields', 'fname', 'lk_'.$f->fname);
+       $nr->view_id =  post('view_id', null);
+       $nr->ref_id = $ref_id;
+       $nr->widget_id = 1; 
+       $db->insertObject('md_fields', $nr);
+       $field_id = $db->db->lastInsertId();
+       
+       $nl = new stdClass();
+       $nl->display_field_id = $f_id;
+       $nl->field_id = $field_id;
+       $db->insertObject('md_lookups', $nl);
+       $this->res->info = T('LOOKUP_FIELD_CREATED');
        echo json_encode($this->res);
     }
     

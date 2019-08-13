@@ -183,7 +183,7 @@
         foreach($h as $i=>$r) 
         {  // Соберём массив для отбора строки по первичному ключу
           if ($rowkeys!='' &&  $r->pkey==1 && isset($rkeys[$npk]))
-           {  $awh[] = "$r->fname=:$r->fname";
+           {  $awh[] = "r.$r->fname=:$r->fname";
               $wk[$r->fname]=$rkeys[$npk];
               $npk++;
            }

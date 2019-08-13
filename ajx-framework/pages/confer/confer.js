@@ -3,7 +3,8 @@ var view_upd = {}; // Изменения  полей представления
 
 function confer(_id)
 { let conf_id = _id; 
-  let fields, active_field=null, active_view=null; // текущие поля представления
+  let fields, active_field=null, active_view=null,
+      active_ref=null, active_ref_field=null;    // текущие поля представления
   let fld_upd = {};
   let selected_table = '';
   let last_view = null;
@@ -24,19 +25,61 @@ function confer(_id)
       if (fields[f][k]==1) frm.find('#'+k)[0].checked=true;
       else frm.find('#'+k)[0].checked=false;
     } 
-    console.log(fld_upd);
+    // console.log(fld_upd);
   }
+  
   
   function onFieldSelect(e)
   { $('#flist a').removeClass('active');
-    var i, f = 1*$(e.target).addClass('active').attr('data-id');
+    let i, f = 1*$(e.target).addClass('active').attr('data-id');
     active_field = f;
+    drawFieldsByRef();
     setFieldAttrs(f);
     $('#fldattr input[type=text]').unbind().keyup(updateField);
     $('#fldattr select').unbind().change(updateField);
     $('#fldattr input[type=checkbox]').unbind().click(updateField);
   }
-  
+
+  function drawFieldsByRef()
+  {  ajx('/pages/confer/GetFieldsByRef', {id:active_ref}, function(d){
+       // console.log(d);
+       let s='';
+       for (let i in d.fields)
+       {  let a = '', r = d.fields[i];
+          if (i==0) 
+          { a=' active';
+            active_ref_field = r.id;
+          }
+          s+='<a href="javascript:" class="list-group-item'+a+'">'+r.fname+' ('+r.title+')\
+               <span class="pull-right">\
+                  <span class="btn btn-xs btn-default b-add-ref-field" data-id="'
+            +r.id+'">\
+                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>\
+                  </span>\
+               </span>\
+            </a>';
+       }
+       $('#refflds').html(s);       
+       $('.b-add-ref-field').click(function(e){
+           let b = $(e.target);
+           if (b.attr('data-id')==undefined) b = b.parents('.btn:first');
+           let id = b.attr('data-id');
+           ajx('/pages/confer/AddFieldsByRef', {master_view_id:active_ref, f_id:id, view_id:active_view}, function(d){
+               console.log(d);
+               setOk(d.info);
+               ajx('/pages/confer/LoadView', {id:active_view}, drawView);
+           });
+        });
+     }); 
+  }
+
+  function onRefSelect(e)
+  { $('#reflist a').removeClass('active');
+    let i, f = 1*$(e.target).addClass('active').attr('data-id');
+    active_ref = f;
+    drawFieldsByRef();
+  }
+    
   function afterSave(d)
   { if (d.type=='fld') fld_upd={}; else
     if (d.type=='view') view_upd={};
@@ -50,7 +93,7 @@ function confer(_id)
   }
   
   function drawView(d)
-  { var i, inp, s='';
+  { let i, inp, s='';
     
     last_view = d;
     saveAll();
@@ -67,13 +110,27 @@ function confer(_id)
     $('a.l-check').attr('href','/view/'+d.view.name);
     
     for (i in fields)
-    {  var a = '', r = fields[i];
+    {  let a = '', r = fields[i];
        if (i==0) a=' active';
        s+='<a href="javascript:" class="list-group-item'+a+'" data-id="'+i+'">'+r.fname+'</a>';
     }
     $('#flist').html(s);
     $('#flist a').click(onFieldSelect);
-    if (fields.length>0) setFieldAttrs(0); 
+    
+    s='';
+    for (i in d.refs)
+    {  let a = '', r = d.refs[i];
+       if (i==0) 
+       { a=' active';
+         active_ref = r.id;
+         drawFieldsByRef();
+       }
+       s+='<a href="javascript:" class="list-group-item'+a+'" data-id="'+r.id+'">'+r.name+'</a>';
+    }
+    $('#reflist').html(s);
+    $('#reflist a').click(onRefSelect);
+    
+    if (fields.length>0) setFieldAttrs(0);
     active_view = d.view.id;
   }
 
