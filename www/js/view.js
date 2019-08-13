@@ -200,7 +200,7 @@ function view(_div, _onSelectRow)
      { frmNew = new wModal('frmNew'+v, T('Add')+': '+title,
        '<button type="button" class="btn btn-default w-close">'+T('Close')+'</button>\
   <button type="button" class="btn btn-primary w-btnsave">'+T('Add')+'</button>', wcl[edit_width-1]);
-       frmNew.draw('<form>'+drawFormInputs({},'', true)+'</form>');
+       frmNew.draw(drawFormInputs({},'', true));
        frmNew.dv.find('.w-close').click( function(){ frmNew.hide(); });
        frmNew.dv.find('.w-setlink').unbind().click(function(e){ setLink(e, frmNew); });
        frmNew.dv.find('.w-btnsave').unbind().click(function(){ formSave(frmNew, true); });
@@ -225,10 +225,11 @@ function view(_div, _onSelectRow)
   {  if (isAdd ==undefined) isAdd = false;
       
      function addRow(label, input)
-      { return '<div class="row"><div class="col-lg-4">'+label+'</div><div class="col-lg-8">'+input+'</div></div>';
+      { return '<div class="form-group">'+label+'<div class="col-sm-8">'+input+'</div></div>';
       }
     
-      let i, s = '';
+      let i, s = '<form class="form-horizontal">';
+      let l_class = ' class="col-sm-4   control-label"';
       for (i in fds)
       {  let r = fds[i];
          let val = '';
@@ -246,19 +247,19 @@ function view(_div, _onSelectRow)
                  if (r.widget_id==6) t="datetime-local";  else
                  if (r.widget_id==7) t="time"; 
              } 
-             if (r.widget_id==1) s+=addRow('<label for="tname">'+label+'</label>',
+             if (r.widget_id==1) s+=addRow('<label'+l_class+'>'+label+'</label>',
              '<div class="input-group w-ref" data-ref="'+r.ref_id+'" data-fid="'+r.id+'"><input type="text" class="form-control w-link" placeholder="'+label+'"  value="'+val+'">\
   <span class="input-group-addon btn btn-default w-setlink">...</span></div>');
              else if (r.widget_id==2) s+='<div class="w-view" data-childref="'+r.ref_id+'" data-keys="'+keys+'"></div>';
              else    
-             s+=addRow('<label for="tname">'+label+'</label>',
+             s+=addRow('<label'+l_class+'>'+label+'</label>',
              '<input type="'+t+'" class="form-control w-data" id="'+r.fname+'" placeholder="'+label+'" value="'+val+'">');
 
              // ссылка
              //if (r.widget_id==1)
          }
       }
-      return s;
+      return s+'</form>';
   }
   
   function drawForm(d, keys)
