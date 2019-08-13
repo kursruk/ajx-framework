@@ -83,7 +83,7 @@ function confer(_id)
   function afterSave(d)
   { if (d.type=='fld') fld_upd={}; else
     if (d.type=='view') view_upd={};
-    setOk('Saved!');
+    setOk(d.info);
   }
   
   function saveAll()
@@ -168,10 +168,6 @@ function confer(_id)
   { $('#tree').treeview({data: d.tree}).on('nodeSelected', onTreeSelect);
   }
   
-  function addNull(s)
-  { if (s.trim()=='') return null;
-    return s;
-  }
   
   function updateField(e)
   { var inp = $(e.target), i, n, id;
@@ -179,7 +175,7 @@ function confer(_id)
     n =  fields[i].id;
     if (fld_upd[n]==undefined) fld_upd[n]={};
     id = inp.attr('id');
-    if (inp.attr('type')=='text') fld_upd[n][id] = addNull( inp.val() );
+    if (inp.attr('type')=='text') fld_upd[n][id] = inp.val();
     if (inp.attr('type')=='checkbox') 
     { if (inp[0].checked)
       { 

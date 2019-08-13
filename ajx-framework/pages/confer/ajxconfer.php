@@ -320,8 +320,12 @@ where c.CONSTRAINT_SCHEMA=:dbname and c.TABLE_NAME=:table AND c.REFERENCED_TABLE
     {  $this->res->type = 'fld';
        $db = $this->cfg->db;
        foreach ($_POST as $id=>$obj)
-       {  $db->updateObject('md_fields',$obj, array('id'=>$id) );  // Обновим данные
+       {  foreach($obj as $k=>$v)
+          { if ($v=='') $obj[$k] = null;
+          }
+          $db->updateObject('md_fields',$obj, array('id'=>$id) );  // Обновим данные
        }
+       $this->res->info=T('Saved');
        echo json_encode($this->res);
     }
 
@@ -332,6 +336,7 @@ where c.CONSTRAINT_SCHEMA=:dbname and c.TABLE_NAME=:table AND c.REFERENCED_TABLE
        $this->res->id = $id;
        $this->res->dara = $_POST;
        $db->updateObject('md_views',$_POST, array('id'=>$id) );  // Обновим данные
+       $this->res->info=T('Saved');
        echo json_encode($this->res);
     }
 
