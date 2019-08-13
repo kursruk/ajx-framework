@@ -30,17 +30,19 @@
          
             <div id="editor" class="view-editor">
                 <div class="form-group">
-                  <label for="tname"><?=T('Table')?></label>
-                  <input type="text" class="form-control" id="tname" placeholder="<?=T('Table')?>">
-                </div>
-                <div class="form-group">
                   <label for="name"><?=T('Identificator')?></label>
                   <input type="text" class="form-control" id="name" placeholder="<?=T('Identificator')?>">
                 </div>
                 <div class="form-group">
+                  <label for="tname"><?=T('Table')?></label>
+                  <input type="text" class="form-control" id="tname" placeholder="<?=T('Table')?>">
+                </div>
+                <!--
+                <div class="form-group">
                   <label for="vtitle"><?=T('Title')?></label>
                   <input type="text" class="form-control" id="vtitle" placeholder="<?=T('Title')?>">
                 </div>
+                -->
                  <div class="form-group">
                     <label><?=T('EDIT_FORM')?></label>
                     <select id="edit_width" class="input-large form-control">
@@ -50,8 +52,8 @@
                     </select>
                   </div>   
                 <div id="flist" class="list-group"></div>
-                <a class="l-check" target="__blank" href="/view"><?=T('CHECK_TABLE')?></a><br>
-                <a class="l-translate" target="__blank" href="javascript:"><?=T('TRANSLATE')?></a>
+                <a class="l-check" target="_blank" href="/view"><?=T('CHECK_TABLE')?></a><br>
+                <a class="l-translate" href="javascript:"><?=T('TRANSLATE')?></a>
             </div>
           </div>
           <div class="col-lg-4">
@@ -73,10 +75,12 @@
                                 <label for="fname"><?=T('Field')?></label>
                                 <input type="text" class="form-control" id="fname" placeholder="<?=T('Field')?>">
                               </div>
+                              <!--
                               <div class="form-group">
                                 <label for="ftitle"><?=T('Title')?></label>
                                 <input type="text" class="form-control" id="ftitle" placeholder="<?=T('Title')?>">
                               </div>
+                              -->
                               <div class="form-group">
                                 <label for="width"><?=T('Width')?></label>
                                 <input type="text" class="form-control" id="width" placeholder="<?=T('Width')?>">
