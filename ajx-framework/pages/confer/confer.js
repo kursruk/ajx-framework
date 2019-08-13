@@ -65,7 +65,6 @@ function confer(_id)
            if (b.attr('data-id')==undefined) b = b.parents('.btn:first');
            let id = b.attr('data-id');
            ajx('/pages/confer/AddFieldsByRef', {master_view_id:active_ref, f_id:id, view_id:active_view}, function(d){
-               console.log(d);
                setOk(d.info);
                ajx('/pages/confer/LoadView', {id:active_view}, drawView);
            });
@@ -123,8 +122,7 @@ function confer(_id)
         { let j = $(list[i]).attr('data-id');
           order[i] = fields[j].id;
         }
-        ajx('/pages/confer/SaveFieldsOrder', {order:order}, function(d){
-           console.log(d);
+        ajx('/pages/confer/SaveFieldsOrder', {order:order}, function(d){           
         });         
         // Save new order
     });
@@ -148,7 +146,7 @@ function confer(_id)
   }
 
   function onTreeSelect(e,d)
-  {  console.log(d);
+  {  
      // If tables selected
      if (d.nodeId==0 || d.parentId==0)
      { $('.view-editor').hide();
@@ -181,7 +179,7 @@ function confer(_id)
       { 
         fld_upd[n][id]=1;
         fields[i][id]=1;
-        console.log(fields[i]);
+        // console.log(fields[i]);
       } else 
       { 
          fld_upd[n][id]=0;      
@@ -320,8 +318,7 @@ function translatorForm(selector)
          }
          ajx('/pages/confer/SaveViewTranslation', {view:v.view.id, data:t} , function(d){
             if (d.info!=undefined) setOk(d.info);          
-         });
-         console.log(t);
+         });         
       });
       
    });  
