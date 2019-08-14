@@ -155,10 +155,7 @@ function view(_div, _onSelectRow)
         } else $( mf[0] ).modal('show');
         //console.log('ref: ', mview, mf.length);
     }
-  
-    // Удалим предние выбранные значения (если были)  
-    for (let i in refs) delete refs[i].value;
-    
+      
     // закешируем данные ссылок
     if (refs[ref]==undefined)
     {  ajx('/pages/view/Ref', {ref:ref} , function(d) { 
@@ -201,8 +198,11 @@ function view(_div, _onSelectRow)
   }
 
   this.addNew = function()
-  {  // console.log(v, 'New:');
+  {  console.log('addNew: '+v);
    
+     // Удалим прежние выбранные значения ссылочных полей
+     for (let i in refs) delete refs[i].value;
+      
      if (frmNew==null) 
      { frmNew = new wModal('frmNew'+v, T('Add')+': '+title,
        '<button type="button" class="btn btn-default w-close">'+T('Close')+'</button>\
@@ -273,7 +273,10 @@ function view(_div, _onSelectRow)
   
   function drawForm(d, keys)
   {   var i,s = '';
-     
+  
+      // Удалим прежние выбранные значения ссылочных полей
+      for (let i in refs) delete refs[i].value;
+    
       s = drawFormInputs(d, keys);
 
       if (frmEdit==null) 
