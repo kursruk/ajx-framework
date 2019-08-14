@@ -75,6 +75,7 @@ function view(_div, _onSelectRow)
   
   gl_views++;
   $(div).attr('id', 'view_'+gl_views);
+  let last_sort = null;
   let pager = new modelPagination('#view_'+gl_views + ' .w-pager');
        
   function T(txt)
@@ -185,9 +186,9 @@ function view(_div, _onSelectRow)
 
  // Сохранение формы представления
   function formSave(form, isInsert)
-  { var i,j, inputs = form.dv.find('.w-data'), data={keys:formkeys, row:{}}, fname;
+  { let i,j, inputs = form.dv.find('.w-data'), data={keys:formkeys, row:{}};
     for (i=0; i<inputs.length; i++)
-    {   var inp = $(inputs[i]), fname;
+    {   let inp = $(inputs[i]), fname;
         fname=inp.attr('id');
         data.row[fname] = inp.val();
     }
@@ -197,11 +198,18 @@ function view(_div, _onSelectRow)
       if (r.value!=undefined) for (j in r.value) data.row[j] = r.value[j];
     }
     if (isInsert!=undefined && isInsert) data.insert = true;
-    ajx('/pages/view/SaveView/'+v, data , function(){ afterSave(); form.hide(); });
-    var p = {page:pager.currentPage(), pg_rows:pg_rows}
+    let p = {page:pager.currentPage(), pg_rows:pg_rows}
     if (gsearch!='') p.search=gsearch;
+    if (last_sort!=null) p.sort = last_sort;
     if (childref!=null) { p.childref = childref; p.fkeys = fkeys; }
-    ajx('/pages/view/loadPage/'+v, p ,drawData);
+         
+    ajx('/pages/view/SaveView/'+v, data , function(){ 
+         afterSave(); 
+         form.hide(); 
+         
+         // reload data
+         ajx('/pages/view/loadPage/'+v, p ,drawData); 
+    });    
   }
 
   this.addNew = function()
@@ -451,14 +459,18 @@ s+='</div>\
         sort.order = sort_type;
         p.sort = [sort];
      }
-     ajx('/pages/view/loadPage/'+v, p ,drawData);
-     console.log(f.fname, sort_type);
+     
+     if (p.sort!=undefined) last_sort = p.sort;
+     else last_sort = null;
+     
+     ajx('/pages/view/loadPage/'+v, p ,drawData);     
   }
   
   this.search = function()
   { var s = $(div).find('input.w-stext').val();
     gsearch = s;
     var p = {page:1, pg_rows:pg_rows, search:s, get_total:true}
+    if (last_sort!=null) p.sort=last_sort;
     ajx('/pages/view/loadPage/'+v, p ,drawData);
   }
   
@@ -466,6 +478,7 @@ s+='</div>\
      var p = {page:n, pg_rows:pg_rows};
      if (gsearch!='') p.search=gsearch;
      if (childref!=null) { p.childref = childref; p.fkeys = fkeys; }
+     if (last_sort!=null) p.sort=last_sort;
      ajx('/pages/view/loadPage/'+v, p ,drawData); 
   });
   
