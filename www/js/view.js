@@ -154,8 +154,8 @@ function view(_div, _onSelectRow)
                  
 
          new view( $('#linked-modals #tgt_'+mview)[0], function(e){
-            // on select target row            
-            setLinkKeys('#linked-modals #'+mview, ref, e); 
+            // on select target row               
+            if (e.offsetX>30) setLinkKeys('#linked-modals #'+mview, ref, e); 
          });
          
         } else 
@@ -185,8 +185,9 @@ function view(_div, _onSelectRow)
   }
 
  // Сохранение формы представления
-  function formSave(form, isInsert)
-  { let i,j, inputs = form.dv.find('.w-data'), data={keys:formkeys, row:{}};
+  function formSave(form, isInsert, close)
+  { if (close==undefined) close = true;
+    let i,j, inputs = form.dv.find('.w-data'), data={keys:formkeys, row:{}};
     for (i=0; i<inputs.length; i++)
     {   let inp = $(inputs[i]), fname;
         fname=inp.attr('id');
@@ -197,16 +198,19 @@ function view(_div, _onSelectRow)
     { var r = refs[i];
       if (r.value!=undefined) for (j in r.value) data.row[j] = r.value[j];
     }
-    if (isInsert!=undefined && isInsert) data.insert = true;
     let p = {page:pager.currentPage(), pg_rows:pg_rows}
+    if (isInsert!=undefined && isInsert) 
+    { data.insert = true;
+      p.get_total = true;
+    }    
     if (gsearch!='') p.search=gsearch;
     if (last_sort!=null) p.sort = last_sort;
     if (childref!=null) { p.childref = childref; p.fkeys = fkeys; }
          
     ajx('/pages/view/SaveView/'+v, data , function(){ 
-         afterSave(); 
-         form.hide(); 
-         
+         afterSave();
+         if (close) form.hide(); 
+         else form.resetForm();
          // reload data
          ajx('/pages/view/loadPage/'+v, p ,drawData); 
     });    
@@ -219,14 +223,18 @@ function view(_div, _onSelectRow)
       
      if (frmNew==null) 
      { frmNew = new wModal('frmNew'+v, T('Add')+': '+title,
-       '<button type="button" class="btn btn-default w-close">'+T('Close')+'</button>\
-  <button type="button" class="btn btn-primary w-btnsave">'+T('Add')+'</button>', wcl[edit_width-1]);
+       '<button type="button" class="btn btn-default w-close">'+T('Close')+'</button>'
+      +'<button type="button" class="btn btn-primary w-btnsave">'+T('Add')+'</button>'
+      +'<button type="button" class="btn btn-success w-btnsave-close">'+T('ADD_AND_CLOSE')+'</button>', 
+       wcl[edit_width-1]);
+       
        frmNew.draw(drawFormInputs({},'', true));
        frmNew.dv.find('.w-close').click( function(){ frmNew.hide(); });
        frmNew.dv.find('.w-setlink').unbind().click(function(e){ 
             setLink(e, frmNew); 
        });
-       frmNew.dv.find('.w-btnsave').unbind().click(function(){ formSave(frmNew, true); });
+       frmNew.dv.find('.w-btnsave-close').unbind().click(function(){ formSave(frmNew, true); });
+       frmNew.dv.find('.w-btnsave').unbind().click(function(){ formSave(frmNew, true, false); });
     
        /*
        frmEdit.draw(s, function(div)
