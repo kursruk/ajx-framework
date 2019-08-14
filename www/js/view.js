@@ -59,6 +59,7 @@ function wModal(id, title, panel, classN)
 
 
 gl_views = 0;
+let gl_frmConfirm = null;
 
 function view(_div, _onSelectRow)
 { 
@@ -184,7 +185,18 @@ function view(_div, _onSelectRow)
      refs={}; // очистим данные ссылок
   }
 
- // Сохранение формы представления
+  function refreshTable(get_total)
+  { let p = {page:pager.currentPage(), pg_rows:pg_rows}
+    if (get_total==undefined) get_total=false;
+    if (gsearch!='') p.search=gsearch;
+    if (last_sort!=null) p.sort = last_sort;
+    if (childref!=null) { p.childref = childref; p.fkeys = fkeys; }
+    ajx('/pages/view/loadPage/'+v, p ,drawData);
+  }
+
+  this.refreshTable = refreshTable;
+  
+  // Сохранение формы представления
   function formSave(form, isInsert, close)
   { if (close==undefined) close = true;
     let i,j, inputs = form.dv.find('.w-data'), data={keys:formkeys, row:{}};
@@ -198,26 +210,66 @@ function view(_div, _onSelectRow)
     { var r = refs[i];
       if (r.value!=undefined) for (j in r.value) data.row[j] = r.value[j];
     }
-    let p = {page:pager.currentPage(), pg_rows:pg_rows}
+   
+    let get_total = false;
+    
     if (isInsert!=undefined && isInsert) 
     { data.insert = true;
-      p.get_total = true;
+      get_total = true;
     }    
-    if (gsearch!='') p.search=gsearch;
-    if (last_sort!=null) p.sort = last_sort;
-    if (childref!=null) { p.childref = childref; p.fkeys = fkeys; }
-         
+    
     ajx('/pages/view/SaveView/'+v, data , function(){ 
          afterSave();
          if (close) form.hide(); 
          else form.resetForm();
          // reload data
-         ajx('/pages/view/loadPage/'+v, p ,drawData); 
+         refreshTable(get_total);
     });    
+  }
+  
+  this.confirm = function(text, _onConfirm)
+  {  if (gl_frmConfirm==null) 
+     { gl_frmConfirm = new wModal('frm_confirm',  T('Confirm'),
+        '<button type="button" class="btn btn-success b-Yes">'+T('B_YES')+'</button>'
+       +'<button type="button" class="btn btn-primary b-No">'+T('B_NO')+'</button>',
+       wcl[0]);
+       gl_frmConfirm.draw('<p class="confirm-text"></p>');       
+       gl_frmConfirm.dv.find('.b-Yes').click( function(){ 
+            if (gl_frmConfirm.onConfirm!==undefined) gl_frmConfirm.onConfirm();
+            gl_frmConfirm.hide(); 
+       }); 
+       gl_frmConfirm.dv.find('.b-No').click( function(){ 
+            gl_frmConfirm.hide(); 
+       }); 
+     }     
+     gl_frmConfirm.dv.find('.confirm-text').html(text);
+     gl_frmConfirm.onConfirm = _onConfirm; 
+     gl_frmConfirm.show();
+  }
+  
+  this.deleteRows = function()
+  { let rows = $(div).find('table tbody tr');
+    let drows = [];
+    let rows_names = '';
+    for (let i=0; i<rows.length; i++)
+    {  let cb = $(rows[i]).find('td.w-chb > input')[0];
+       if (cb.checked) 
+       { drows.push( $(rows[i]).attr('data-key') );
+         rows_names+=$(rows[i]).find('td:eq(1)').html()+'<br>';
+       }
+       
+    }
+    if (drows.length>0)
+    this.confirm(T('DELETE_ROWS')+"<br><blockquote>"+rows_names+'</blockquote>', function(){ 
+        ajx('/pages/view/Delete/'+v, {rows:drows}, function(d){
+           setOk(d.info);
+           refreshTable(true);
+        });        
+    });
   }
 
   this.addNew = function()
-  {  // console.log('addNew: '+v);   
+  {  // console.log('addNew: '+v);     
      // Удалим прежние выбранные значения ссылочных полей
      for (let i in refs) delete refs[i].value;
       
@@ -415,6 +467,7 @@ s+='</div>\
        //  $(div).find('nav.w-pager li').click(function(li){ self.pgClick(li); });
         $(div).find('button.w-search').click(function(){ self.search(); });
         $(div).find('button.w-btn-new').click(function(){ self.addNew(); });
+        $(div).find('button.w-btn-del').click(function(){ self.deleteRows(); });        
         $(div).find('input.w-stext').keypress(function(e){ if (e.charCode==13) self.search(); }).tooltip();
         $(div).find('.w-panel button').tooltip();        
         $(div).find('.w-chb-all').click( function(cb)

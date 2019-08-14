@@ -316,6 +316,47 @@ join md_fields f on l.display_field_id=f.id where l.field_id=:id',
           echo json_encode($this->res);
       }
       
+      function ajxDelete()
+      { if (!isset($this->seg[3])) return $this->error(T('ERR_NO_VIEW_TITLE'), 404);
+         
+        $v = $this->seg[3];
+        $db = $this->cfg->db;
+        $conf_id = $this->getConfId();
+        
+        $qr = $db->query('select id, tname from md_views where name=:name and conf_id=:id',
+          array('name'=>$v, 'id'=>$conf_id) );
+        $vr =  $db->fetchSingle($qr);
+        $this->includePageLocales(__DIR__);
+        try
+        {
+           if (!empty($vr))
+           {  $rows = post('rows',[]);
+              foreach($rows as $k=>$v) $rows[$k]*=1;
+              $db->query("delete from $vr->tname where id in(".implode(',', $rows).")");              
+              $this->res->info = T('Deleted');
+           }
+        } catch (PDOException $e)
+        { $errno = $e->getCode();
+          $errmsg = $e->getMessage();                            
+          // Error translation
+          switch ($errno)
+          {  case 23000:
+                  $fa =  explode("`", $errmsg);
+                  if (strpos($errmsg, 'foreign key constraint fails')>0)
+                  {  $f = $fa[3];
+                     $qr = $db->query('select id from md_views where name=:name',
+                           ['name'=>$f] );
+                     $ref =  $db->fetchSingle($qr);
+                     $tr = $this->loadViewTranslation($ref->id);
+                     $errmsg = sprintf( T('ERR_FOREIGN_KEY_ERROR'), $tr->$f );
+                  } 
+             break;              
+          }          
+          return $this->error($errmsg, $errno);
+        }   
+        echo json_encode($this->res);
+      }
+      
       function ajxloadPage()
       {   if (!isset($this->seg[3])) return $this->error('Не передано название представления!',4001);
       
