@@ -83,17 +83,17 @@ function view(_div, _onSelectRow)
   }
 
   function updateDisplayLinks(ref, eForm)
-  {  var p=[], i, ar = eForm.dv.find('div.w-ref[data-ref='+ref.ref+']');
-     // Расставим подписи ссылок по местам
+  {  let p=[], i, ar = eForm.dv.find('div.w-ref[data-ref='+ref.ref+']');
+     // Расставим подписи ссылок по местам    ;
      function drawLinks(d)
-     {  for (i in p)
-        { var id = p[i]; 
-          var inp =  eForm.dv.find('div.w-ref[data-fid='+id+']').find('input');
+     {  for (let i in p)
+        { let id = p[i]; 
+          let inp =  eForm.dv.find('div.w-ref[data-fid='+id+']').find('input');        
           inp.val(d.row['c'+i])
         }       
      }
      
-     for (i=0; i<ar.length; i++)
+     for (let i=0; i<ar.length; i++)
      {  p.push( $(ar[i]).attr("data-fid") );
        // console.log(p);
      }
@@ -103,8 +103,8 @@ function view(_div, _onSelectRow)
   // Функция устанавливает внешние ключи из модального окна таблицы
   // ключи сохраняются в массиве refs, свойстве value
   // для обновления подписей ссылочных полей вызываем updateDisplayLinks
-  function setLinkKeys(frm, ref, e, eForm)
-  { //  console.log('setLinkKeys ', ref, eForm, e.target);
+  function setLinkKeys(frm, ref, e)
+  {  eForm = $('#'+ref.mview.name).prop('returnForm');     
      $(frm).modal('hide');
      var fkeys = $(e.target.parentNode).attr('data-key');
      var val={}, i, a = fkeys.split(':'), id=ref.ref; // данные ключей
@@ -113,17 +113,18 @@ function view(_div, _onSelectRow)
        val[fk] = a[i];
      }
      refs[id].value = val;
-     console.log(refs);
      updateDisplayLinks(refs[id], eForm);
   }
   
 
   // Установка значения справочного поля из справочника
   function setLink(e, eForm)
-  { let ref = $(e.target.parentNode).attr('data-ref'); 
-       
-    function drawModal(ref)
-    {   var s='', mf, mview = ref.mview.name;
+  { let ref_id = $(e.target.parentNode).attr('data-ref'); 
+    // console.log('setLink', eForm.dv.selector);
+    
+    function drawModal(ref, eForm)
+    {  //  console.log('drawForm', eForm.dv.selector);
+        var s='', mf, mview = ref.mview.name;
         // поищем мастер форму ввода данных в ссылочное поле
         mf = $('#linked-modals #'+mview);
         // Создадим новую
@@ -146,28 +147,34 @@ function view(_div, _onSelectRow)
   </div>\
 </div>';
          $('#linked-modals').append(s);
-         $('#linked-modals #'+mview).modal({width: '80%'});         
+         $('#linked-modals #'+mview)
+            .prop('returnForm', eForm)
+            .modal({width: '80%'}); 
+                 
 
-         new view( $('#linked-modals #tgt_'+mview)[0], function(e){ 
-            setLinkKeys('#linked-modals #'+mview, ref, e, eForm); 
+         new view( $('#linked-modals #tgt_'+mview)[0], function(e){
+            // on select target row            
+            setLinkKeys('#linked-modals #'+mview, ref, e); 
          });
          
-        } else $( mf[0] ).modal('show');
+        } else 
+        {  $( mf[0] ).prop('returnForm', eForm).modal('show') ;
+        }
         //console.log('ref: ', mview, mf.length);
     }
       
     // закешируем данные ссылок
-    if (refs[ref]==undefined)
-    {  ajx('/pages/view/Ref', {ref:ref} , function(d) { 
+    if (refs[ref_id]==undefined)
+    {  ajx('/pages/view/Ref', {ref:ref_id} , function(d) { 
           if (!d.error) 
           { delete d.error;
             d.dview = v;
-            d.ref = ref;
-            refs[ref] = d;            
-            drawModal(d);
+            d.ref = ref_id;
+            refs[ref_id] = d;            
+            drawModal(d, eForm);
           }
         });
-    } else drawModal(refs[ref]);
+    } else drawModal(refs[ref_id], eForm);
   }
 
 
@@ -198,8 +205,7 @@ function view(_div, _onSelectRow)
   }
 
   this.addNew = function()
-  {  console.log('addNew: '+v);
-   
+  {  // console.log('addNew: '+v);   
      // Удалим прежние выбранные значения ссылочных полей
      for (let i in refs) delete refs[i].value;
       
@@ -262,7 +268,7 @@ function view(_div, _onSelectRow)
              else if (r.widget_id==2) s+='<div class="w-view" data-childref="'+r.ref_id+'" data-keys="'+keys+'"></div>';
              else    
              s+=addRow('<label'+l_class+'>'+label+'</label>',
-             '<input type="'+t+'" class="form-control w-data" id="'+r.fname+'" placeholder="'+label+'" value="'+val+'">');
+             '<input type="'+t+'" class="form-control w-data" autocomplete="none" id="'+r.fname+'" placeholder="'+label+'" value="'+val+'">');
 
              // ссылка
              //if (r.widget_id==1)
@@ -293,9 +299,8 @@ function view(_div, _onSelectRow)
          div.find('.w-btnsave').unbind().click(function(){ formSave(frmEdit); });
          div.find('.w-view').each(function(i,div){ new view(div); });
          div.find('.w-setlink').unbind().click(function(e){ setLink(e, frmEdit); });
-      });
-      
-      console.log('drawForm '+v);
+      });      
+      // console.log('drawForm '+v);
   }
 
   function editForm(r)
