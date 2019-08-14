@@ -67,10 +67,10 @@ function view(_div, _onSelectRow)
   let v, pkeys = [], pcols = [], pg_rows, edit_width=1,
   n_pages, self = this, fds, gsearch='', formkeys={}, refs={}, get_total = true,
   onSelectRow = _onSelectRow;
-  var fkeys = '', childref=null; // Внешние ключи подчинённой таблицы
-  var frmEdit = null;
-  var frmNew = null;
-  var wcl=['','middle','large']; // классы размеров форм
+  let fkeys = '', childref=null; // Внешние ключи подчинённой таблицы
+  let frmEdit = null;
+  let frmNew = null;
+  let wcl=['','middle','large']; // классы размеров форм
   let lc = {};  // Language translatoin text
   
   gl_views++;
@@ -104,7 +104,8 @@ function view(_div, _onSelectRow)
   // ключи сохраняются в массиве refs, свойстве value
   // для обновления подписей ссылочных полей вызываем updateDisplayLinks
   function setLinkKeys(frm, ref, e, eForm)
-  {  $(frm).modal('hide');
+  { //  console.log('setLinkKeys ', ref, eForm, e.target);
+     $(frm).modal('hide');
      var fkeys = $(e.target.parentNode).attr('data-key');
      var val={}, i, a = fkeys.split(':'), id=ref.ref; // данные ключей
      for (i in a)
@@ -112,13 +113,14 @@ function view(_div, _onSelectRow)
        val[fk] = a[i];
      }
      refs[id].value = val;
+     console.log(refs);
      updateDisplayLinks(refs[id], eForm);
   }
   
 
   // Установка значения справочного поля из справочника
   function setLink(e, eForm)
-  { var ref = $(e.target.parentNode).attr('data-ref');    
+  { let ref = $(e.target.parentNode).attr('data-ref'); 
        
     function drawModal(ref)
     {   var s='', mf, mview = ref.mview.name;
@@ -146,15 +148,20 @@ function view(_div, _onSelectRow)
          $('#linked-modals').append(s);
          $('#linked-modals #'+mview).modal({width: '80%'});         
 
-         new view( $('#linked-modals #tgt_'+mview)[0], function(e){ setLinkKeys('#linked-modals #'+mview, ref, e, eForm); } );
+         new view( $('#linked-modals #tgt_'+mview)[0], function(e){ 
+            setLinkKeys('#linked-modals #'+mview, ref, e, eForm); 
+         });
+         
         } else $( mf[0] ).modal('show');
         //console.log('ref: ', mview, mf.length);
     }
   
+    // Удалим предние выбранные значения (если были)  
+    for (let i in refs) delete refs[i].value;
+    
     // закешируем данные ссылок
     if (refs[ref]==undefined)
-    {  ajx('/pages/view/Ref', {ref:ref} ,
-      function(d){ 
+    {  ajx('/pages/view/Ref', {ref:ref} , function(d) { 
           if (!d.error) 
           { delete d.error;
             d.dview = v;
@@ -202,7 +209,9 @@ function view(_div, _onSelectRow)
   <button type="button" class="btn btn-primary w-btnsave">'+T('Add')+'</button>', wcl[edit_width-1]);
        frmNew.draw(drawFormInputs({},'', true));
        frmNew.dv.find('.w-close').click( function(){ frmNew.hide(); });
-       frmNew.dv.find('.w-setlink').unbind().click(function(e){ setLink(e, frmNew); });
+       frmNew.dv.find('.w-setlink').unbind().click(function(e){ 
+            setLink(e, frmNew); 
+       });
        frmNew.dv.find('.w-btnsave').unbind().click(function(){ formSave(frmNew, true); });
     
        /*

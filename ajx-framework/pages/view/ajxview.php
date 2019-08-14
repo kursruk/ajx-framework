@@ -96,6 +96,7 @@
           $errmsg = $e->getMessage();
           $tr = $this->loadViewTranslation($vr->id);          
           $this->includePageLocales(__DIR__);
+          // Error translation
           switch ($errno)
           {  case 23000:
              case 'HY000':                  
