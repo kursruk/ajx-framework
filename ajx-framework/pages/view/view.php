@@ -6,6 +6,7 @@
         $this->path = $path.'/index.php';
         $this->cfg = $cfg;
         $this->seg = $seg;
+        $cfg->addJs('/js', 'jquery.sortable.min.js');
         $cfg->addJS('/js',"common.js");
         $cfg->addJS('/js',"models.js");
         $cfg->addJS('/js',"view.js?v3");

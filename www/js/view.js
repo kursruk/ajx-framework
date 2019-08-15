@@ -276,8 +276,8 @@ function view(_div, _onSelectRow)
      if (frmNew==null) 
      { frmNew = new wModal('frmNew'+v, T('Add')+': '+title,
        '<button type="button" class="btn btn-default w-close">'+T('Close')+'</button>'
-      +'<button type="button" class="btn btn-primary w-btnsave">'+T('Add')+'</button>'
-      +'<button type="button" class="btn btn-success w-btnsave-close">'+T('ADD_AND_CLOSE')+'</button>', 
+      +'<button type="button" class="btn btn-success w-btnsave-close">'+T('ADD_AND_CLOSE')+'</button>'
+      +'<button type="button" class="btn btn-primary w-btnsave">'+T('Add')+'</button>',
        wcl[edit_width-1]);
        
        frmNew.draw(drawFormInputs({},'', true));

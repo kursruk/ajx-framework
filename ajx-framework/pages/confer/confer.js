@@ -267,7 +267,6 @@ function confer(_id)
   $('#editor select').change(updateView);
   $('#btnSave').click(saveAll);
   $('.b-refresh-columns').click(function(){
-      console.log('Refresh');
       if (last_view!==null)    
       {  console.log(last_view);
          ajx('/pages/confer/RefreshViewFields', {id:last_view.view.id} , function(d){              
@@ -388,9 +387,8 @@ function translatorForm(selector)
          }
          ajx('/pages/confer/SaveViewTranslation', {view:v.view.id, data:t} , function(d){
             if (d.info!=undefined) 
-            {
-               setOk(d.info);          
-               $('#translate-form').hide();
+            {  setOk(d.info);          
+               $('#translate-form').modal('hide');
             }
          });         
       });
