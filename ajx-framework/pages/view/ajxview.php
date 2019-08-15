@@ -326,13 +326,31 @@ join md_fields f on l.display_field_id=f.id where l.field_id=:id',
         $qr = $db->query('select id, tname from md_views where name=:name and conf_id=:id',
           array('name'=>$v, 'id'=>$conf_id) );
         $vr =  $db->fetchSingle($qr);
+        
+        $qr = $db->query('select fname from md_fields where pkey=1 and view_id=:id order by ordr,id',
+            array('id'=>$vr->id) );         
+        $pkeys = [];        
+        $pknames = [];
+        while($r = $db->fetchSingleValue($qr)) 
+        {  $pkeys[] = "`$r`=:$r";           
+           $pknames[] = $r;
+        }
+        
         $this->includePageLocales(__DIR__);
+        
+        if (count($pknames)==0) return $this->error(T('ERR_NO_PRIMARY_KEYS_TO_DELETE'), 328);
+        
         try
         {
            if (!empty($vr))
            {  $rows = post('rows',[]);
-              foreach($rows as $k=>$v) $rows[$k]*=1;
-              $db->query("delete from $vr->tname where id in(".implode(',', $rows).")");              
+              $sql = "delete from $vr->tname where ".implode(' and ',$pkeys);
+              foreach($rows as $v) 
+              { $a=explode(':', $v);
+                $vals = [];
+                foreach ($a as $i=>$v)  $vals[ $pknames[$i] ] = $v;
+                $db->query($sql, $vals);
+              }
               $this->res->info = T('Deleted');
            }
         } catch (PDOException $e)

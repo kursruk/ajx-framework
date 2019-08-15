@@ -379,7 +379,11 @@ function translatorForm(selector)
            if (txt!=='') t[ $(tds[0]).text() ] = txt;
          }
          ajx('/pages/confer/SaveViewTranslation', {view:v.view.id, data:t} , function(d){
-            if (d.info!=undefined) setOk(d.info);          
+            if (d.info!=undefined) 
+            {
+               setOk(d.info);          
+               $('#translate-form').hide();
+            }
          });         
       });
       
