@@ -8,6 +8,7 @@ function confer(_id)
   let fld_upd = {};
   let selected_table = '';
   let last_view = null;
+  let treeX = 0;
   
   let T = function(s){ return s; };
   
@@ -165,18 +166,56 @@ function confer(_id)
      { $('.view-editor').hide();
        // Table selected
        if (d.parentId!==undefined)
-       {  $('.add-view').show();
+       {  $('.add-view').show();          
           selected_table = d.text;
        } else $('.add-view').hide();
      } else 
      {   $('.add-view').hide();
          $('.view-editor').show();
      }
-     if (d.id!=undefined) ajx('/pages/confer/LoadView', {id:d.id}, drawView);
+     
+     // If clicked at the right edge of the tree view
+     if (e.target.offsetWidth-treeX < 42)
+     {  if (d.id!==undefined)
+        {  // console.log('delete '+d.id);
+           if (confirm(T('CONFIRM_DELETE_VIEW')+' '+d.text+'?'))
+           ajx('/pages/confer/DeleteView', {id:d.id}, function(d) {                           
+              refresh();
+              setOk(d.info);
+           });
+        }
+        else if (d.table!==undefined) console.log('create ', d.table);
+     } 
+     
+     if (d.id!=undefined) 
+     {  ajx('/pages/confer/LoadView', {id:d.id}, drawView);
+     }
+     
+     
   }
   
   function drawData(d)
-  { $('#tree').treeview({data: d.tree}).on('nodeSelected', onTreeSelect);
+  { 
+     // draw tree view and set titles to the buttons
+     function viewsEvents()
+     {   $('#tree .b-delete-view').attr('title', T('DELETE_VIEW'));
+     }
+     
+     $('#tree').treeview({data: d.tree})
+      .on('nodeSelected', onTreeSelect)
+      .on('nodeExpanded', function(e,node){
+         if (node.data!==undefined && node.fired==undefined && node.data=='tables')
+         {  node.fired = true;
+            setTimeout(function(){               
+               $('#tree .b-add-view').attr('title', T('ADD_VIEW'));               
+            }, 100);
+         }
+         if (node.data!==undefined && node.fired==undefined && node.data=='views')
+         {  node.fired = true;
+            setTimeout(viewsEvents, 200);
+         }
+      });
+      setTimeout(viewsEvents, 200);
   }
   
   
@@ -210,19 +249,16 @@ function confer(_id)
   }
 
   function refresh()
-  {
-     ajx('/pages/confer/Load', {conf:conf_id} ,drawData);
+  {  ajx('/pages/confer/Load', {conf:conf_id} ,drawData);
   }
   
   function setConf(id)
-  {  conf_id = id;
-     refresh();
+  {  conf_id = id;     
+     gl_Locales.translate('pages/confer', function(fu) {
+       T=fu; // set global translation function
+       refresh();
+     });
   }
-  
-  gl_Locales.translate('pages/confer', function(fu) {
-     T=fu; // set global translation function
-     refresh();
-  });
   
   $('#editor input[type=text]').keyup(updateView);
   $('#editor select').change(updateView);
@@ -237,6 +273,12 @@ function confer(_id)
   });
   
   function getLastView(){ return last_view; }
+  
+  // Get treeview mouse X cordinate
+  $('#tree').mousemove(function(e){
+     if ($(e.target).prop('tagName')!=='SPAN')
+      treeX = e.offsetX;     
+  });
   
   return {setConf:setConf, refresh:refresh, getLastView:getLastView};
 }

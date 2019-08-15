@@ -106,6 +106,7 @@
        $tree = array();
        $n = new stdClass();
        $n->text = T('Tables');
+       $n->data = 'tables';
        $n->state = $state;
        $n->nodes = array();
        foreach($tables as $t)
@@ -113,20 +114,23 @@
          if (substr($tab,0,3)!='md_')
          { $tn = new stdClass();
            $tn->text = $tab;
+           $tn->table = $tab;
+           $tn->icon = 'glyphicon glyphicon-save-file b-add-view';
            $n->nodes[] = $tn;
          }
        }
        $tree[] = $n;
 
        $n = new stdClass();
-       $n->text = T('Forms');
+       $n->text = T('Views');
+       $n->data = 'views';
        $qr = $db->query('select id,vtitle from md_views where conf_id=:id order by 2', array('id'=>$conf) );
        $tables = $qr->fetchAll(PDO::FETCH_NUM);
        $n->nodes = array();
        foreach($tables as $t)
        { $tn = new stdClass();
          $tn->text = $t[1]; //.' ('.$t[0].')';
-         $tn->icon = 'glyphicon glyphicon-trash';
+         $tn->icon = 'glyphicon glyphicon-trash b-delete-view';
          $n->nodes[] = $tn;
          $tn->id = $t[0];
        }
@@ -235,6 +239,14 @@ where c.CONSTRAINT_SCHEMA=:dbname and c.TABLE_NAME=:table AND c.REFERENCED_TABLE
     {  $id = post('id', null);
        $db = $this->cfg->db;
        $db->query('delete from md_fields where id=:id',['id'=>$id]);
+       $this->res->info = T('Deleted');
+       echo json_encode($this->res);
+    }
+    
+    function ajxDeleteView()
+    {  $id = post('id', null);
+       $db = $this->cfg->db;
+       $db->query('delete from md_views where id=:id',['id'=>$id]);
        $this->res->info = T('Deleted');
        echo json_encode($this->res);
     }
