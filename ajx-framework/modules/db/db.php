@@ -53,7 +53,7 @@
        {   throw new Exception(T('EMPTY_KEYS')); 
        }
        
-       foreach ($keys as $k=>$v) $ks[] = "$k=:$k";
+       foreach ($keys as $k=>$v) $ks[] = "$k=:pk_$k";
        foreach ($values as $field => $v) $sts[] = '`'.$field.'`=:'.$field;
        $sets = implode(',', $sts);
        $sql = "update $table set $sets where (".implode(' and ',$ks).") ";
@@ -61,8 +61,8 @@
        foreach ($values as $f => $v) 
        { if ($v=='null') $v=null;
          $sth->bindValue(':' . $f, $v);
-       }
-       foreach ($keys as $f => $v) $sth->bindValue(':' . $f, $v);
+       }       
+       foreach ($keys as $f => $v) $sth->bindValue(':pk_'.$f, $v);
        $sth->execute();
        return true;
     }
