@@ -9,6 +9,7 @@ function confer(_id)
   let selected_table = '';
   let last_view = null;
   
+  let T = function(s){ return s; };
   
   function setFieldAttrs(f)
   { $('#fldattr #fname').val(fields[f].fname);
@@ -31,7 +32,11 @@ function confer(_id)
   
   function onFieldSelect(e)
   { $('#flist a').removeClass('active');
-    let i, f = 1*$(e.target).addClass('active').attr('data-id');
+    let li = $(e.target);
+    let i, f;
+    if (li.prop('tagName')=='SPAN') li=li.parent();
+    f = 1*li.addClass('active').attr('data-id');
+    
     active_field = f;
     drawFieldsByRef();
     setFieldAttrs(f);
@@ -51,12 +56,8 @@ function confer(_id)
             active_ref_field = r.id;
           }
           s+='<a href="javascript:" class="list-group-item'+a+'">'+r.fname+' ('+r.title+')\
-               <span class="pull-right">\
-                  <span class="btn btn-xs btn-default b-add-ref-field" data-id="'
-            +r.id+'">\
-                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>\
-                  </span>\
-               </span>\
+                     <span data-id="'+r.id
+                     +'" title="'+T('ADD_REF_TO_FORM')+'" class="glyphicon glyphicon-plus b-add-ref-field" aria-hidden="true"></span>\
             </a>';
        }
        $('#refflds').html(s);       
@@ -111,10 +112,22 @@ function confer(_id)
     for (i in fields)
     {  let a = '', r = fields[i];
        if (i==0) a=' active';
-       s+='<a href="javascript:" class="list-group-item'+a+'" data-id="'+i+'">'+r.fname+'</a>';
+       s+='<a href="javascript:" class="list-group-item'+a+'" data-id="'+i+'"><span title="'+
+       T('Delete')+'" class="b-del-field glyphicon glyphicon-trash"  aria-hidden="true"></span>'+r.fname+'</a>';
     }
     $('#flist').html(s);
-    $('#flist a').click(onFieldSelect);
+    $('#flist a').click(onFieldSelect);    
+    // Delete field from list
+    $('#flist .b-del-field').click(function(e){
+        let f = fields[ $(e.target).parent().attr('data-id') ];
+        if ( confirm(T('CONFIRM_DELETE_FIELD')+' '+f.fname+'?') )
+        {  ajx('/pages/confer/DeleteField', {id:f.id}, function(d) {                           
+              ajx('/pages/confer/LoadView', {id:f.view_id}, drawView);
+              setOk(d.info);
+           });        
+        }
+    });
+    
     $('#flist').sortable().bind('sortupdate', function(e, ui) {
         let list = $('#flist a');        
         let order = {};
@@ -123,7 +136,7 @@ function confer(_id)
           order[i] = fields[j].id;
         }
         ajx('/pages/confer/SaveFieldsOrder', {order:order}, function(d){           
-        });         
+        });
         // Save new order
     });
     
@@ -206,7 +219,10 @@ function confer(_id)
      refresh();
   }
   
-  refresh();
+  gl_Locales.translate('pages/confer', function(fu) {
+     T=fu; // set global translation function
+     refresh();
+  });
   
   $('#editor input[type=text]').keyup(updateView);
   $('#editor select').change(updateView);

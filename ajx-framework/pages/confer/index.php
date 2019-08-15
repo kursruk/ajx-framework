@@ -1,13 +1,3 @@
-<style type="text/css">
-  div.w-tabpane
-  { border-left: solid #ddd 1px;
-    border-right: solid #ddd 1px;
-    border-bottom: solid #ddd 1px;
-    border-radius: 0 0px 4px 4px;
-  }
-  #flist { overflow-y: scroll;   height: 206pt; }
-  .w-scroll { overflow-y: scroll;   height: 200pt; }
-</style>
 <div>
     <div class="row">
           <div class="col-lg-4">

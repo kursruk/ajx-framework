@@ -222,6 +222,14 @@ where c.CONSTRAINT_SCHEMA=:dbname and c.TABLE_NAME=:table AND c.REFERENCED_TABLE
        echo json_encode($this->res);
     }
 
+    function ajxDeleteField()
+    {  $id = post('id', null);
+       $db = $this->cfg->db;
+       $db->query('delete from md_fields where id=:id',['id'=>$id]);
+       $this->res->info = T('Deleted');
+       echo json_encode($this->res);
+    }
+
     function ajxAddFieldsByRef()
     {  $f_id = post('f_id', null);
        $view_id = 

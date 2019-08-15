@@ -11,6 +11,7 @@
         $this->cfg->addJs('/js', 'jquery.sortable.min.js');
         $this->cfg->addJs('/html.php/pages/confer','confer.js');
         $this->cfg->addCSS('/bootstrap-3.3.6','bootstrap-treeview.min.css');
+        $this->cfg->addCSS('/html.php/pages/confer','confer.css');
         
      }
      function display()
