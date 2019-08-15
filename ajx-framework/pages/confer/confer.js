@@ -180,6 +180,7 @@ function confer(_id)
         {  // console.log('delete '+d.id);
            if (confirm(T('CONFIRM_DELETE_VIEW')+' '+d.text+'?'))
            ajx('/pages/confer/DeleteView', {id:d.id}, function(d) {                           
+              last_view = null;
               refresh();
               setOk(d.info);
            });
@@ -190,13 +191,10 @@ function confer(_id)
                refresh();          
           });
         }
-     } 
-     
+     } else     
      if (d.id!=undefined) 
      {  ajx('/pages/confer/LoadView', {id:d.id}, drawView);
      }
-     
-     
   }
   
   function drawData(d)
@@ -268,6 +266,14 @@ function confer(_id)
   $('#editor input[type=text]').keyup(updateView);
   $('#editor select').change(updateView);
   $('#btnSave').click(saveAll);
+  $('.b-refresh-columns').click(function(){
+      console.log('Refresh');
+      if (last_view!==null)    
+      {   ajx('/pages/confer/RefreshViewFields', {id:last_view.id} , function(d){
+              // console.log(d); 
+          });
+      }
+  });
   
   // Create new view
   $('.b-create-view').click(function(){
@@ -349,7 +355,7 @@ function translatorForm(selector)
    
    function show(view)
    {  v = view;
-      if (v==null) return;      
+      if (v==null) return;
       ajx('/pages/confer/LoadViewTranslation', {view:v.view.id} , function(d){
          let s = '';
          let tx = d.data;
@@ -398,7 +404,7 @@ $(function()
    
    let translator = translatorForm('#translate');
    
-   $('a.l-translate').click(function(){
+   $('button.l-translate').click(function(){
       translator.show( conf.getLastView() );
    });
       

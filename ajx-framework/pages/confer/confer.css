@@ -7,5 +7,6 @@ div.w-tabpane
 #flist { overflow-y: scroll;   height: 206pt; }
 #flist .glyphicon, #refflds .glyphicon, #tree .glyphicon { float:right; }
 .w-scroll { overflow-y: scroll;   height: 200pt; }
+button > .glyphicon { padding-right: 7pt; }
 
 

@@ -1,6 +1,6 @@
 <div>
     <div class="row">
-          <div class="col-lg-4">
+          <div class="col-lg-3">
                 <div class="input-group">
                    <select class="form-control s-conf-selector" data-model="/pages/confer/Model/conf">
                    </select>
@@ -10,7 +10,7 @@
                 </div>
                 <div id="tree"></div>
           </div>
-          <div class="col-lg-4">
+          <div class="col-lg-5">
             
             <div class="add-view" style="display:none">
                 <div class="form-group">
@@ -33,17 +33,26 @@
                   <input type="text" class="form-control" id="vtitle" placeholder="<?=T('Title')?>">
                 </div>
                 -->
-                 <div class="form-group">
+                <div class="form-group">
                     <label><?=T('EDIT_FORM')?></label>
                     <select id="edit_width" class="input-large form-control">
                         <option value="1" selected="selected"><?=T('Slim')?></option>
                         <option value="2"><?=T('Normal')?></option>
                         <option value="3"><?=T('Wide')?></option>
                     </select>
-                  </div>   
+                </div>   
                 <div id="flist" class="list-group"></div>
-                <a class="l-check" target="_blank" href="/view"><?=T('CHECK_TABLE')?></a><br>
-                <a class="l-translate" href="javascript:"><?=T('TRANSLATE')?></a>
+                <div class="form-group">
+                   <button class="btn btn-default btn-sm b-refresh-columns" type="button" title="<?=T('REFRESH_COLUMNS_TITLE')?>">
+                        <span class="glyphicon glyphicon-refresh"></span><?=T('REFRESH_COLUMNS')?>
+                   </button>
+                   <button class="btn btn-default btn-sm l-translate" type="button" title="<?=T('TRANSLATE_TITLE')?>">
+                        <span class="glyphicon glyphicon-globe"></span><?=T('TRANSLATE')?>
+                   </button>
+                   <a class="btn btn-default btn-sm l-check" target="_blank" href="/" type="button" title="<?=T('CHECK_VIEW_TITLE')?>">
+                        <span class="glyphicon glyphicon-check"></span><?=T('CHECK_VIEW')?>
+                   </a>
+                </div>                
             </div>
           </div>
           <div class="col-lg-4">

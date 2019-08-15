@@ -45,6 +45,12 @@
        return $name;       
     }
     
+    function ajxRefreshViewFields()
+    { $id = post('id', null);
+      
+      echo json_encode($this->res);
+    }
+    
     function ajxCreateView()
     {  $table = post('table', null);
        $db = $this->cfg->db;
@@ -285,6 +291,8 @@ where c.CONSTRAINT_SCHEMA=:dbname and c.TABLE_NAME=:table AND c.REFERENCED_TABLE
        { $db = $this->cfg->db;
          $qr = $db->query('select * from md_views where  id=:id', ['id'=>$id] );
          $this->res->view =  $db->fetchSingle($qr);
+         
+         if (empty($this->res->view)) return $this->error(T('VIEW_NOT_FOUND'), 295);
          
          $qr = $db->query('select * from md_fields where view_id=:id order by ordr, id', ['id'=>$id] );
          $this->res->fields = $qr->fetchAll(PDO::FETCH_OBJ);
