@@ -126,6 +126,7 @@
        foreach($tables as $t)
        { $tn = new stdClass();
          $tn->text = $t[1]; //.' ('.$t[0].')';
+         $tn->icon = 'glyphicon glyphicon-trash';
          $n->nodes[] = $tn;
          $tn->id = $t[0];
        }
@@ -138,21 +139,26 @@
     }
     
     function ajxGetFieldsByRef()
-    {  $id = post('id', null);
+    {  global $_TRANSLATIONS;       
+       $id = post('id', null);
        if ($id!=null)
        { $db = $this->cfg->db;         
          $qr = $db->query('select id, fname, view_id from md_fields where view_id=:id and ingrid=1 and visable=1 order by id', ['id'=>$id] );
          $this->res->fields = $qr->fetchAll(PDO::FETCH_OBJ);
          if (isset($this->res->fields[0]))
          { $view_id = $this->res->fields[0]->view_id;
+           
+           // Append text to translation
            $qr = $db->query('select json from md_view_translations 
            where view_id=:view_id and lang=:lang', 
             ['view_id'=>$view_id,'lang'=>$this->cfg->lang] ); 
-           $tr = json_decode( $db->fetchSingleValue($qr) );           
+           $tr = json_decode( $db->fetchSingleValue($qr) );
+           if (!empty($tr)) $_TRANSLATIONS = array_merge($_TRANSLATIONS, (array)$tr);
+           
            $flds = $this->res->fields;
            foreach($flds as $k=>$v)
            {  $fname = $flds[$k]->fname;
-              $flds[$k]->title = $tr->$fname;
+              $flds[$k]->title = T($fname);
            }
          }
        } 

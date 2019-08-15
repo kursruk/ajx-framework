@@ -5,7 +5,7 @@ div.w-tabpane
  border-radius: 0 0px 4px 4px;
 }
 #flist { overflow-y: scroll;   height: 206pt; }
-#flist .glyphicon, #refflds .glyphicon { float:right; }
+#flist .glyphicon, #refflds .glyphicon, #tree .glyphicon { float:right; }
 .w-scroll { overflow-y: scroll;   height: 200pt; }
 
 
