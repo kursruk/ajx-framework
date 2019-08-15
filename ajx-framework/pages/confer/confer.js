@@ -184,7 +184,12 @@ function confer(_id)
               setOk(d.info);
            });
         }
-        else if (d.table!==undefined) console.log('create ', d.table);
+        else if (d.table!==undefined)
+        { //console.log('create ', d.table);
+          ajx('/pages/confer/CreateView', {table:d.table} , function(d){
+               refresh();          
+          });
+        }
      } 
      
      if (d.id!=undefined) 
@@ -267,8 +272,7 @@ function confer(_id)
   // Create new view
   $('.b-create-view').click(function(){
        ajx('/pages/confer/CreateView', {table:selected_table} , function(d){
-          refresh();
-          // location.reload();
+          refresh();          
        });
   });
   
