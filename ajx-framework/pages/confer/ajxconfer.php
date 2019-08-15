@@ -47,7 +47,38 @@
     
     function ajxRefreshViewFields()
     { $id = post('id', null);
-      
+      $db = $this->cfg->db;
+      // Insert new records
+      $qr = $db->query('select tname, conf_id from md_views where  id=:id', ['id'=>$id] );
+      $vi =  $db->fetchSingle($qr);
+      $sql = "insert into md_fields (view_id, fname, ftitle, required
+      , visable, ingrid, ordr)
+      select :view_id as view_id,   
+      c.COLUMN_NAME as fname, 
+      c.COLUMN_NAME as ftitle,
+      case c.IS_NULLABLE 
+        when 'Yes' then 0
+        when 'No' then 1
+      end as required,
+      case COALESCE(ku.CONSTRAINT_NAME,1)
+        when 1 then 1
+        else 0
+      end as visable,
+      1 as ingrid,
+      1000 as ordr
+from information_schema.columns c
+  left outer join information_schema.KEY_COLUMN_USAGE ku 
+      on c.COLUMN_NAME=ku.COLUMN_NAME 
+        and c.TABLE_NAME=ku.TABLE_NAME
+        and c.TABLE_SCHEMA=ku.TABLE_SCHEMA 
+        and (ku.CONSTRAINT_NAME='PRIMARY' or ku.REFERENCED_COLUMN_NAME is not null)
+  left outer join md_fields f on c.COLUMN_NAME = f.fname and f.view_id = :view_id
+   where c.TABLE_SCHEMA=:dbname
+      and c.TABLE_NAME=:table
+      and f.id is null";
+      $db->query($sql, ['table'=>$vi->tname, 'view_id'=>$id,
+      'dbname'=>$this->cfg->dbname ]);
+      $this->res->info=T('Updated');
       echo json_encode($this->res);
     }
     
@@ -274,6 +305,7 @@ where c.CONSTRAINT_SCHEMA=:dbname and c.TABLE_NAME=:table AND c.REFERENCED_TABLE
        $nr->view_id =  post('view_id', null);
        $nr->ref_id = $ref_id;
        $nr->widget_id = 1; 
+       $nr->ordr = 1000;
        $db->insertObject('md_fields', $nr);
        $field_id = $db->db->lastInsertId();
        

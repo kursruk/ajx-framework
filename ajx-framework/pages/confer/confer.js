@@ -269,8 +269,10 @@ function confer(_id)
   $('.b-refresh-columns').click(function(){
       console.log('Refresh');
       if (last_view!==null)    
-      {   ajx('/pages/confer/RefreshViewFields', {id:last_view.id} , function(d){
-              // console.log(d); 
+      {  console.log(last_view);
+         ajx('/pages/confer/RefreshViewFields', {id:last_view.view.id} , function(d){              
+               setOk(d.info);
+               ajx('/pages/confer/LoadView', {id:last_view.view.id}, drawView);               
           });
       }
   });

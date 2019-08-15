@@ -25,4 +25,3 @@ create table staff
   constraint foreign key (position_id) references job_postions (id)  on update cascade,
   primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
