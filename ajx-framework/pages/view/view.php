@@ -2,7 +2,7 @@
   class view extends wPage
   {  var $seg;
      function view($cfg, $path, $seg=null)
-     {  $cfg->title = 'Документы';
+     {  $cfg->title = T('Documents');
         $this->path = $path.'/index.php';
         $this->cfg = $cfg;
         $this->seg = $seg;

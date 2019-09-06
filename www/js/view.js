@@ -424,25 +424,25 @@ function view(_div, _onSelectRow)
 
 // панель
 s+='<div class="w-panel">';
-s+='<div class="row"><div class="col-lg-3"> <span class="w-label">'+T(d.name)+'</span></div>';
+s+='<div class="row"><div class="col-lg-4 col-md-4"> <span class="w-label">'+T(d.name)+'</span></div>';
+
+
+s+='<div class="col-lg-8 col-md-8">';
+
+s+='<div class="input-group">';
+s+=' </div>';
 
 // Кнопки
+// s+='<button class="btn btn-default w-btn-sort" data-toggle="tooltip" data-placement="top" title="'+T('Sort')+'" aria-hidden="true"><span class="glyphicon glyphicon glyphicon-sort-by-attributes"></span></button>';
+// s+='<button class="btn btn-default w-btn-find" data-toggle="tooltip" data-placement="top" title="'+T('Search')+'" aria-hidden="true"><span class="glyphicon glyphicon-search"></span></button>';
 
-s+='<div class="col-lg-3"> \
- <div class="input-group">';
-s+='<button class="btn btn-default w-btn-new" data-toggle="tooltip" data-placement="top" title="'+T('Add')+'" aria-hidden="true"><span class="glyphicon glyphicon-plus"></span></button>';
-s+='<button class="btn btn-default w-btn-del" data-toggle="tooltip" data-placement="top" title="'+T('Delete')+'" aria-hidden="true"><span class="glyphicon glyphicon-minus"></span></button>&nbsp;';
-s+='<button class="btn btn-default w-btn-sort" data-toggle="tooltip" data-placement="top" title="'+T('Sort')+'" aria-hidden="true"><span class="glyphicon glyphicon glyphicon-sort-by-attributes"></span></button>';
-s+='<button class="btn btn-default w-btn-find" data-toggle="tooltip" data-placement="top" title="'+T('Search')+'" aria-hidden="true"><span class="glyphicon glyphicon-search"></span></button>';
-s+=' </div>\
-</div>';
-
-// поиск
-s+='<div class="col-lg-6">';
-if (sfld.length>0) s+='<div class="input-group"> \
-<input type="text" class="form-control w-stext" data-toggle="tooltip" data-placement="top" title="'+sfld.join('; ')+'" placeholder="'+T('Search')+'"> \
-<span class="input-group-btn"> <button class="btn btn-default w-search" type="button">'+T('Search')+'</button> </span> \
-</div>';
+s+='<div class="input-group"> \
+<span class="input-group-btn"><button class="btn btn-default w-btn-new" data-toggle="tooltip" data-placement="top" title="'+T('Add')+'" aria-hidden="true"><span class="glyphicon glyphicon-plus"></span></button></span>\
+<span class="input-group-btn"><button style="margin-right:5pt" class="btn btn-default w-btn-del" data-toggle="tooltip" data-placement="top" title="'+T('Delete')+'" aria-hidden="true"><span class="glyphicon glyphicon-minus"></span></button></span>';
+ // поиск
+ if (sfld.length>0) s+= '<input type="text" class="form-control w-stext" data-toggle="tooltip" data-placement="top" title="'+sfld.join('; ')+'" placeholder="'+T('Search')+'"> \
+ <span class="input-group-btn"> <button class="btn btn-default w-search" type="button">'+T('Search')+'</button> </span>';
+s+='</div>';
  
 s+='</div>\
 </div>\
